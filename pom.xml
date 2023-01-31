@@ -18,7 +18,7 @@
         <published.container.port.sandbox>8723</published.container.port.sandbox>
         <published.container.port.test>9076</published.container.port.test>
         <published.container.port.production>9076</published.container.port.production>
-        <failsafe.version>3.2.4</failsafe.version>
+        <failsafe.version>3.3.0</failsafe.version>
         <openapi-generator-maven-plugin>6.2.1</openapi-generator-maven-plugin>
         <generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
         <generated-sources-java-path>src/main/java</generated-sources-java-path>
