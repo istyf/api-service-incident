@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/lifebuoy"
+  },
+  "response": {
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "bodyFileName": "test2_internalServerErrorFromLifebuoy/responses/lifebuoy.txt",
+    "status": 500
+  }
+}

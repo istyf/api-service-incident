@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/messaging/email"
+  },
+  "response": {
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "bodyFileName": "test1_successfulIncident/responses/messaging.json",
+    "status": 200
+  }
+}

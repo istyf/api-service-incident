@@ -1,0 +1,19 @@
+{
+  "personId": "58f96da8-6d76-4fa6-bb92-64f71fdc6aa5",
+  "phoneNumber": "0701234567",
+  "email": "someemail@somehost.se",
+  "contactMethod": "email",
+  "category": 1,
+  "description": "A description",
+  "mapCoordinates": "62.23162,17.27403",
+  "externalCaseId": "1234",
+  "attachments": [
+    {
+      "category": "Adress",
+      "extension": ".txt",
+      "mimeType": "text/plain",
+      "note": "a small note about this file",
+      "file": "aGVsbG8gd29ybGQK"
+    }
+  ]
+}

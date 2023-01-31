@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/messaging/email"
+  },
+  "response": {
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "bodyFileName": "test2_internalServerErrorFromMessaging/responses/messaging.json",
+    "status": 500
+  }
+}

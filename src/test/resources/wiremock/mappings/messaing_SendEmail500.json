@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/messaging/email"
+  },
+  "response": {
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "bodyFileName": "messagingSendEmail500.json",
+    "status": 500
+  }
+}

@@ -1,0 +1,65 @@
+<h2>Felanmälan</h2>
+<br/>
+<div style="margin-left:40px;">
+    <p>BESKRIVNING</p>
+    <p th:text="'Text: '+${description}"></p>
+    <p>Bild: Se bilagor</p>
+    <p th:text="'Skapad: '+${currentTime}"></p>
+
+    <br/>
+
+    <p>PLATS</p>
+    <p><a th:href="@{'https://www.google.com/maps/search/'(api=1,query=${coords})}">Se på karta</a></p>
+
+    <br/>
+
+    <p>TAGGAR</p>
+
+    <br/>
+
+    <p>KONTAKT</p>
+    <p th:text="'Email: '+${email}">/p>
+    <p th:text="'Telefon: '+${phonenumber}"></p>
+
+    <br/>
+
+    <p>ÄNDRA STATUS</p>
+    <p><a th:href="@{${process.env.APP_URI}'/api/statusupdate'(errandid=${incidentId},status=1)}">Öppnat</a> |
+        <a th:href="@{${process.env.APP_URI}'/api/statusupdate'(errandid=${incidentId},status=2)}">Avslutat</a> |
+        <a th:href="@{${process.env.APP_URI}'/api/statusupdate'(errandid=${incidentId},status=3)}">Avvisat</a></p>
+
+    <br/>
+
+    <p>VERKSAMHET</p>
+    <p>Förslag: ---</p>
+
+    <br/>
+
+    <p>FEEDBACK (Ärendet ska till: )</p>
+    <p>
+        <a th:href="@{${process.env.APP_URI}'/api/setincidentfeedback'(errandid=${incidentId},feedback='Stadsbyggnadskontoret')}">Stadsbyggnadskontoret</a>
+        |
+        <a th:href="@{${process.env.APP_URI}'/api/setincidentfeedback'(errandid=${incidentId},feedback='Trafikverket')}">Trafikverket</a>
+        |
+        <a th:href="@{${process.env.APP_URI}'/api/setincidentfeedback'(errandid=${incidentId},feedback='Drakfastigheter')}">Drakfastigheter</a>
+        |
+        <a th:href="@{${process.env.APP_URI}'/api/setincidentfeedback'(errandid=${incidentId},feedback='SKIFU')}">SKIFU'</a>
+        |
+        <a th:href="@{${process.env.APP_URI}'/api/setincidentfeedback'(errandid=${incidentId},feedback='MSVA')}">MSVA</a>
+        |
+        <a th:href="@{${process.env.APP_URI}'/api/setincidentfeedback'(errandid=${incidentId},feedback='Eln%C3%A4t')}">Elnät</a>
+        |
+        <a th:href="@{${process.env.APP_URI}'/api/setincidentfeedback'(errandid=${incidentId},feedback='Motionssp%C3%A5r')}">Motionsspår</a>
+    </p>
+
+    <br/>
+
+    <p>PROBLEM</p>
+    <p>Saknas bilden eller kan inte ärendet uppdateras, skicka då till: <a th:href="@{'mailto:'${feedbackmail}}">Medborgarappen
+        Support</a></p>
+
+    <br/>
+
+    <p>Ha en bra dag!</p>
+    <p>Mvh MedborgarAppen</p>
+</div>
