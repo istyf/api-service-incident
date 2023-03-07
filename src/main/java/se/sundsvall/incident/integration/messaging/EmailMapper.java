@@ -1,21 +1,23 @@
 package se.sundsvall.incident.integration.messaging;
 
-import generated.se.sundsvall.messaging.Email;
-import generated.se.sundsvall.messaging.EmailAttachment;
-import generated.se.sundsvall.messaging.EmailRequest;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.stereotype.Component;
-import org.thymeleaf.context.Context;
-import org.thymeleaf.spring5.SpringTemplateEngine;
-import se.sundsvall.incident.dto.AttachmentDto;
-import se.sundsvall.incident.dto.IncidentDto;
-
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.stereotype.Component;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring5.SpringTemplateEngine;
+
+import se.sundsvall.incident.dto.AttachmentDto;
+import se.sundsvall.incident.dto.IncidentDto;
+
+import generated.se.sundsvall.messaging.Email;
+import generated.se.sundsvall.messaging.EmailAttachment;
+import generated.se.sundsvall.messaging.EmailRequest;
 
 @Component
 @EnableConfigurationProperties(EmailMapperProperties.class)
@@ -62,7 +64,7 @@ class EmailMapper {
         templateModel.put("phonenumber", dto.getPhoneNumber());
         templateModel.put("email", dto.getEmail());
         templateModel.put("coords", dto.getMapCoordinates());
-        templateModel.put("description", dto.getDescription());
+        templateModel.put("emailDescription", dto.getDescription());
         templateModel.put("currentTime", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         templateModel.put("feedbackmail", properties.getFeedbackEmail());
         Context thymeleafContext = new Context();
