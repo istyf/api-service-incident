@@ -1,8 +1,11 @@
 package se.sundsvall.incident;
 
-import generated.se.sundsvall.messaging.Email;
-import generated.se.sundsvall.messaging.EmailAttachment;
-import generated.se.sundsvall.messaging.EmailRequest;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+
 import se.sundsvall.incident.api.model.AttachmentRequest;
 import se.sundsvall.incident.api.model.IncidentSaveRequest;
 import se.sundsvall.incident.dto.AttachmentDto;
@@ -12,11 +15,9 @@ import se.sundsvall.incident.dto.Status;
 import se.sundsvall.incident.integration.db.entity.AttachmentEntity;
 import se.sundsvall.incident.integration.db.entity.IncidentEntity;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
+import generated.se.sundsvall.messaging.EmailAttachment;
+import generated.se.sundsvall.messaging.EmailRequest;
+import generated.se.sundsvall.messaging.EmailSender;
 
 public final class TestDataFactory {
     public static final String INCIDENTID = "ef60e3e-d245-4d79-b350-fbabc022b249";
@@ -169,7 +170,7 @@ public final class TestDataFactory {
     public static EmailRequest buildMSVAEmailRequest() {
 
         return new EmailRequest()
-                .sender(new Email()
+                .sender(new EmailSender()
                         .address("some@email.se")
                         .name("somename"))
                 .emailAddress("some@email.se")
@@ -180,7 +181,7 @@ public final class TestDataFactory {
 
     public static EmailRequest buildEmailRequest() {
         return new EmailRequest()
-                .sender(new generated.se.sundsvall.messaging.Email()
+                .sender(new EmailSender()
                         .address("some@email.se")
                         .name("somename"))
                 .emailAddress("some@email.se")

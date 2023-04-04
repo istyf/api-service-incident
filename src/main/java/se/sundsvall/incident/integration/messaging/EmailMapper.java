@@ -15,9 +15,9 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import se.sundsvall.incident.dto.AttachmentDto;
 import se.sundsvall.incident.dto.IncidentDto;
 
-import generated.se.sundsvall.messaging.Email;
 import generated.se.sundsvall.messaging.EmailAttachment;
 import generated.se.sundsvall.messaging.EmailRequest;
+import generated.se.sundsvall.messaging.EmailSender;
 
 @Component
 @EnableConfigurationProperties(EmailMapperProperties.class)
@@ -36,7 +36,7 @@ class EmailMapper {
         String[] splitDescription = dto.getDescription().split("-");
         var htmlmessage = "<p>Vattenmätare " + splitDescription[0] + " genererat larm" + splitDescription[1] + " klockan " + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "</p>";
         return new EmailRequest()
-                .sender(new Email()
+                .sender(new EmailSender()
                         .address(properties.getSenderEmailAddress())
                         .name(properties.getSenderName()))
                 .emailAddress(properties.getMsvaRecipientEmailAddress())
@@ -46,7 +46,7 @@ class EmailMapper {
 
     EmailRequest toEmailDto(IncidentDto dto) {
         return new EmailRequest()
-                .sender(new generated.se.sundsvall.messaging.Email()
+                .sender(new EmailSender()
                         .address(properties.getSenderEmailAddress())
                         .name(properties.getSenderName()))
                 .emailAddress(properties.getRecipientEmailAddress())
