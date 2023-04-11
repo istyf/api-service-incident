@@ -1,6 +1,8 @@
 package se.sundsvall.incident.integration.lifebuoy;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Component;
+
 import se.sundsvall.incident.dto.IncidentDto;
 
 @Component
@@ -16,8 +18,7 @@ public class LifeBuoyIntegration {
         this.mapper = mapper;
     }
 
-    public String sendLifeBuoy(IncidentDto dto) {
-        return client.sendLifebuoy(mapper.toLifeBuoyyRequest(dto)).getBody();
-
+    public String sendLifeBuoy(IncidentDto dto) throws JsonProcessingException {
+            return client.sendLifebuoy(mapper.toLifeBuoyyRequest(dto)).getBody();
     }
 }

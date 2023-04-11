@@ -1,27 +1,5 @@
 package se.sundsvall.incident.service;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import se.sundsvall.incident.api.model.IncidentSaveRequest;
-import se.sundsvall.incident.dto.Category;
-import se.sundsvall.incident.dto.IncidentDto;
-import se.sundsvall.incident.dto.Status;
-import se.sundsvall.incident.integration.db.AttachmentRepository;
-import se.sundsvall.incident.integration.db.IncidentRepository;
-import se.sundsvall.incident.integration.db.entity.IncidentEntity;
-import se.sundsvall.incident.integration.lifebuoy.LifeBuoyIntegration;
-import se.sundsvall.incident.integration.messaging.MessagingIntegration;
-import se.sundsvall.incident.service.mapper.Mapper;
-
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -35,6 +13,30 @@ import static se.sundsvall.incident.TestDataFactory.buildAttachmentEntityList;
 import static se.sundsvall.incident.TestDataFactory.buildIncidentEntity;
 import static se.sundsvall.incident.TestDataFactory.buildIncidentSaveRequest;
 import static se.sundsvall.incident.TestDataFactory.buildListIncidentEntities;
+
+import java.util.Optional;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+
+import se.sundsvall.incident.api.model.IncidentSaveRequest;
+import se.sundsvall.incident.dto.Category;
+import se.sundsvall.incident.dto.IncidentDto;
+import se.sundsvall.incident.dto.Status;
+import se.sundsvall.incident.integration.db.AttachmentRepository;
+import se.sundsvall.incident.integration.db.IncidentRepository;
+import se.sundsvall.incident.integration.db.entity.IncidentEntity;
+import se.sundsvall.incident.integration.lifebuoy.LifeBuoyIntegration;
+import se.sundsvall.incident.integration.messaging.MessagingIntegration;
+import se.sundsvall.incident.service.mapper.Mapper;
 
 @ExtendWith(MockitoExtension.class)
 class IncidentServiceTest {
@@ -72,7 +74,7 @@ class IncidentServiceTest {
     }
 
     @Test
-    void sendIncident() {
+    void sendIncident() throws JsonProcessingException {
         var incidentSaveRequest = buildIncidentSaveRequest(Category.LIVBOJ);
         var incidentEntity = buildIncidentEntity(Category.LIVBOJ);
         when(incidentRepository.save(any())).thenReturn(incidentEntity);

@@ -7,5 +7,5 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(setterPrefix = "with")
 public class LifeBuoyRequestWrapper {
     String apiKey;
-    LifebuoyRequest errandJsonString;
+    String errandJsonString;
 }
