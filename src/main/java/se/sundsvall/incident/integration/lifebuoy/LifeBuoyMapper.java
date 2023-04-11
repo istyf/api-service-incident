@@ -16,17 +16,19 @@ import se.sundsvall.incident.integration.lifebuoy.model.LifebuoyRequest;
 @EnableConfigurationProperties(LifeBuoyProperties.class)
 class LifeBuoyMapper {
     
+    
+    private final ObjectMapper objectMapper;
     private final LifeBuoyProperties properties;
     
-    LifeBuoyMapper(LifeBuoyProperties lifeBuoyProperties) {
+    LifeBuoyMapper(ObjectMapper objectMapper, LifeBuoyProperties lifeBuoyProperties) {
+        this.objectMapper = objectMapper;
         this.properties = lifeBuoyProperties;
     }
     
     LifeBuoyRequestWrapper toLifeBuoyyRequest(IncidentDto dto) throws JsonProcessingException {
-        var objectmapper = new ObjectMapper();
         return LifeBuoyRequestWrapper.builder()
             .withApiKey(properties.getApikey())
-            .withErrandJsonString(objectmapper.writeValueAsString(LifebuoyRequest.builder()
+            .withErrandJsonString(objectMapper.writeValueAsString(LifebuoyRequest.builder()
                 .withValue(LifebuoyRequest.TypeAndValue.Type.Property, "source", dto.getIncidentId())
                 .withValue(LifebuoyRequest.TypeAndValue.Type.Property, "personalnumber", "NOT MAPPED")
                 .withValue(LifebuoyRequest.TypeAndValue.Type.Property, "name", "Errand Sundsvall")
