@@ -1,8 +1,10 @@
 package se.sundsvall.incident.integration.lifebuoy;
 
 import java.util.Arrays;
+
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
+
 import se.sundsvall.incident.dto.Category;
 import se.sundsvall.incident.dto.IncidentDto;
 import se.sundsvall.incident.integration.lifebuoy.model.LifeBuoyRequestWrapper;
