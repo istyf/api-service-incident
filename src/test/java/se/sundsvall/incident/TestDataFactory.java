@@ -1,6 +1,6 @@
 package se.sundsvall.incident;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -175,7 +175,7 @@ public final class TestDataFactory {
                         .name("somename"))
                 .emailAddress("some@email.se")
                 .subject("Somesubject")
-                .htmlMessage("<p>Vattenmätare " + "splitDescription[0]" + " genererat larm" + "splitDescription[1]" + " klockan " + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "</p>");
+                .htmlMessage("<p>Vattenmätare " + "splitDescription[0]" + " genererat larm" + "splitDescription[1]" + " klockan " + OffsetDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "</p>");
 
     }
 

@@ -2,6 +2,7 @@ package se.sundsvall.incident.integration.messaging;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.HashMap;
@@ -10,7 +11,7 @@ import java.util.Map;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import se.sundsvall.incident.dto.AttachmentDto;
 import se.sundsvall.incident.dto.IncidentDto;
@@ -65,7 +66,7 @@ class EmailMapper {
         templateModel.put("email", dto.getEmail());
         templateModel.put("coords", dto.getMapCoordinates());
         templateModel.put("emailDescription", dto.getDescription());
-        templateModel.put("currentTime", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        templateModel.put("currentTime", OffsetDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         templateModel.put("feedbackmail", properties.getFeedbackEmail());
         Context thymeleafContext = new Context();
         thymeleafContext.setVariables(templateModel);

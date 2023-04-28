@@ -16,7 +16,7 @@ import se.sundsvall.incident.integration.lifebuoy.LifeBuoyIntegration;
 import se.sundsvall.incident.integration.messaging.MessagingIntegration;
 import se.sundsvall.incident.service.mapper.Mapper;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -87,7 +87,7 @@ public class IncidentService {
         incidentRepository
                 .findById(incidentId).map(entity -> {
                     entity.setStatus(Status.forValue(statusid));
-                    entity.setUpdated(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                    entity.setUpdated(OffsetDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                     return incidentRepository.save(entity);
                 });
 
@@ -104,7 +104,7 @@ public class IncidentService {
     public void updateIncidentFeedback(String incidentId, String feedback) {
         incidentRepository.findById(incidentId).map(i -> {
             i.setFeedback(feedback);
-            i.setUpdated(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            i.setUpdated(OffsetDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
             return incidentRepository.save(i);
         });
     }
