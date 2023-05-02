@@ -25,7 +25,7 @@ import se.sundsvall.incident.api.model.IncidentSaveRequest;
 import se.sundsvall.incident.api.model.IncidentSaveResponse;
 import se.sundsvall.incident.service.IncidentService;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.List;
 
 @Tag(name = "Incident resources")

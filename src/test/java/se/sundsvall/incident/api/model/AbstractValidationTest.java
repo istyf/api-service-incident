@@ -1,7 +1,7 @@
 package se.sundsvall.incident.api.model;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 
 abstract class AbstractValidationTest {

@@ -1,7 +1,7 @@
 package se.sundsvall.incident.api.model.validation;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import static java.util.Objects.isNull;
 
 public class ValidCoordsValidator implements ConstraintValidator<ValidCoords, String> {
