@@ -1,6 +1,5 @@
 package se.sundsvall.incident.service;
 
-
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -25,93 +24,86 @@ import se.sundsvall.incident.service.mapper.Mapper;
 
 @Service
 public class IncidentService {
-    
-    private static final Logger log = LoggerFactory.getLogger(IncidentService.class);
-    private final LifeBuoyIntegration lifeBuoyIntegration;
-    private final MessagingIntegration messagingIntegration;
-    private final IncidentRepository incidentRepository;
-    private final AttachmentRepository attachmentRepository;
-    private final Mapper mapper;
-    
-    public IncidentService(IncidentRepository incidentRepository,
-        
-        LifeBuoyIntegration lifeBuoyIntegration,
-        MessagingIntegration messagingIntegration, Mapper mapper,
-        AttachmentRepository attachmentRepository) {
-        this.incidentRepository = incidentRepository;
-        this.lifeBuoyIntegration = lifeBuoyIntegration;
-        this.messagingIntegration = messagingIntegration;
-        this.mapper = mapper;
-        this.attachmentRepository = attachmentRepository;
-    }
-    
-    public Optional<IncidentDto> getOepIncidentstatus(String externalCaseId) {
-        return incidentRepository.findIncidentEntityByExternalCaseId(externalCaseId).map(mapper::toIncidentDto);
-    }
-    
-    public IncidentDto sendIncident(IncidentSaveRequest request) {
-        var entity = mapper.toEntity(request);
-        
-        
-        List<AttachmentEntity> attachmentList = Optional.ofNullable(request.getAttachments()).orElse(List.of())
-            .stream()
-            .map(e -> mapper.toEntity(e, entity.getIncidentId()))
-            .toList();
-        
-        try {
-            switch (entity.getCategory()) {
-                case LIVBAT, LIVBOJ ->
-                    entity.setExternalCaseId(lifeBuoyIntegration.sendLifeBuoy(mapper.toIncidentDto(entity)));
-                case VATTENMATARE ->
-                    messagingIntegration.sendMSVAEmail(mapper.toIncidentDto(entity));
-                default ->
-                    messagingIntegration.sendEmail(mapper.toIncidentDto(entity, attachmentList));
-            }
-        } catch (Exception e) {
-            entity.setStatus(Status.ERROR);
-            
-            log.warn("Unable to send email for new incident with incidentId: {}, Exception was: {}", entity.getIncidentId(), e);
-        }
-        incidentRepository.save(entity);
-        attachmentRepository.saveAll(attachmentList);
-        
-        return IncidentDto.builder()
-            .withIncidentId(entity.getIncidentId())
-            .withStatusText(entity.getStatus().getLabel())
-            .build();
-    }
-    
-    public Optional<IncidentDto> getIncident(String incidentId) {
-        return incidentRepository.findById(incidentId)
-            .map((IncidentEntity incidentEntity) ->
-                mapper.toIncidentDto(incidentEntity, attachmentRepository.findAllByIncidentId(incidentId)));
-    }
-    
-    public void updateIncidentStatus(String incidentId, Integer statusid) {
-        incidentRepository
-            .findById(incidentId).map(entity -> {
-                entity.setStatus(Status.forValue(statusid));
-                entity.setUpdated(LocalDateTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-                return incidentRepository.save(entity);
-            });
-        
-    }
-    
-    public List<IncidentDto> getIncidents(int offset, int limit) {
-        return incidentRepository.findAll(PageRequest.of(offset, limit))
-            .stream()
-            .map((IncidentEntity incidentEntity) ->
-                mapper.toIncidentDto(incidentEntity, attachmentRepository.findAllByIncidentId(incidentEntity.getIncidentId())))
-            .toList();
-    }
-    
-    public void updateIncidentFeedback(String incidentId, String feedback) {
-        incidentRepository.findById(incidentId).map(i -> {
-            i.setFeedback(feedback);
-            i.setUpdated(LocalDateTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-            return incidentRepository.save(i);
-        });
-    }
-    
-    
+
+	private static final Logger log = LoggerFactory.getLogger(IncidentService.class);
+	private final LifeBuoyIntegration lifeBuoyIntegration;
+	private final MessagingIntegration messagingIntegration;
+	private final IncidentRepository incidentRepository;
+	private final AttachmentRepository attachmentRepository;
+	private final Mapper mapper;
+
+	public IncidentService(IncidentRepository incidentRepository,
+
+		LifeBuoyIntegration lifeBuoyIntegration,
+		MessagingIntegration messagingIntegration, Mapper mapper,
+		AttachmentRepository attachmentRepository) {
+		this.incidentRepository = incidentRepository;
+		this.lifeBuoyIntegration = lifeBuoyIntegration;
+		this.messagingIntegration = messagingIntegration;
+		this.mapper = mapper;
+		this.attachmentRepository = attachmentRepository;
+	}
+
+	public Optional<IncidentDto> getOepIncidentstatus(String externalCaseId) {
+		return incidentRepository.findIncidentEntityByExternalCaseId(externalCaseId).map(mapper::toIncidentDto);
+	}
+
+	public IncidentDto sendIncident(IncidentSaveRequest request) {
+		final var entity = mapper.toEntity(request);
+
+		final List<AttachmentEntity> attachmentList = Optional.ofNullable(request.getAttachments()).orElse(List.of())
+			.stream()
+			.map(e -> mapper.toEntity(e, entity.getIncidentId()))
+			.toList();
+
+		try {
+			switch (entity.getCategory()) {
+				case LIVBAT, LIVBOJ -> entity.setExternalCaseId(lifeBuoyIntegration.sendLifeBuoy(mapper.toIncidentDto(entity)));
+				case VATTENMATARE -> messagingIntegration.sendMSVAEmail(mapper.toIncidentDto(entity));
+				default -> messagingIntegration.sendEmail(mapper.toIncidentDto(entity, attachmentList));
+			}
+		} catch (final Exception e) {
+			entity.setStatus(Status.ERROR);
+
+			log.warn("Unable to send email for new incident with incidentId: {}, Exception was: {}", entity.getIncidentId(), e);
+		}
+		incidentRepository.save(entity);
+		attachmentRepository.saveAll(attachmentList);
+
+		return IncidentDto.builder()
+			.withIncidentId(entity.getIncidentId())
+			.withStatusText(entity.getStatus().getLabel())
+			.build();
+	}
+
+	public Optional<IncidentDto> getIncident(String incidentId) {
+		return incidentRepository.findById(incidentId)
+			.map((IncidentEntity incidentEntity) -> mapper.toIncidentDto(incidentEntity, attachmentRepository.findAllByIncidentId(incidentId)));
+	}
+
+	public void updateIncidentStatus(String incidentId, Integer statusid) {
+		incidentRepository.findById(incidentId)
+			.ifPresent(entity -> {
+				entity.setStatus(Status.forValue(statusid));
+				entity.setUpdated(LocalDateTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+				incidentRepository.save(entity);
+			});
+	}
+
+	public List<IncidentDto> getIncidents(int offset, int limit) {
+		return incidentRepository.findAll(PageRequest.of(offset, limit))
+			.stream()
+			.map((IncidentEntity incidentEntity) -> mapper.toIncidentDto(incidentEntity, attachmentRepository.findAllByIncidentId(incidentEntity.getIncidentId())))
+			.toList();
+	}
+
+	public void updateIncidentFeedback(String incidentId, String feedback) {
+		incidentRepository.findById(incidentId)
+			.ifPresent(entity -> {
+				entity.setFeedback(feedback);
+				entity.setUpdated(LocalDateTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+				incidentRepository.save(entity);
+			});
+	}
+
 }
