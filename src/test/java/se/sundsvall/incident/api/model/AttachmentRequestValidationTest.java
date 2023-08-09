@@ -1,65 +1,66 @@
 package se.sundsvall.incident.api.model;
 
-import java.util.List;
-import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static se.sundsvall.incident.TestDataFactory.buildAttachmentRequest;
 
-public class AttachmentRequestValidationTest extends AbstractValidationTest {
+import java.util.List;
 
-    @Test
-    void testValidationWithValidValues() {
-        var request = buildAttachmentRequest();
+import org.junit.jupiter.api.Test;
 
-        assertThat(validator.validate(request)).isEmpty();
-    }
+class AttachmentRequestValidationTest extends AbstractValidationTest {
 
+	@Test
+	void testValidationWithValidValues() {
+		final var request = buildAttachmentRequest();
 
-    @Test
-    void testValidationWithInvalidCategory() {
-        var request = buildAttachmentRequest(req -> req.setCategory(null));
+		assertThat(validator.validate(request)).isEmpty();
+	}
 
-        var constraints = List.copyOf(validator.validate(request));
-        assertThat(constraints).hasSize(1);
-        assertThat(constraints.get(0)).satisfies(constraintViolation -> {
-            assertThat(constraintViolation.getPropertyPath().toString()).isEqualTo("category");
-            assertThat(constraintViolation.getMessage()).isEqualTo("must not be blank");
-        });
-    }
+	@Test
+	void testValidationWithInvalidCategory() {
+		final var request = buildAttachmentRequest(req -> req.setCategory(null));
 
-    @Test
-    void testValidationWithInvalidExtension() {
-        var request = buildAttachmentRequest(req -> req.setExtension(null));
+		final var constraints = List.copyOf(validator.validate(request));
+		assertThat(constraints).hasSize(1);
+		assertThat(constraints.get(0)).satisfies(constraintViolation -> {
+			assertThat(constraintViolation.getPropertyPath()).hasToString("category");
+			assertThat(constraintViolation.getMessage()).isEqualTo("must not be blank");
+		});
+	}
 
-        var constraints = List.copyOf(validator.validate(request));
-        assertThat(constraints).hasSize(1);
-        assertThat(constraints.get(0)).satisfies(constraintViolation -> {
-            assertThat(constraintViolation.getPropertyPath().toString()).isEqualTo("extension");
-            assertThat(constraintViolation.getMessage()).isEqualTo("must not be blank");
-        });
-    }
+	@Test
+	void testValidationWithInvalidExtension() {
+		final var request = buildAttachmentRequest(req -> req.setExtension(null));
 
-    @Test
-    void testValidationWithInvalidMimeType() {
-        var request = buildAttachmentRequest(req -> req.setMimeType(null));
+		final var constraints = List.copyOf(validator.validate(request));
+		assertThat(constraints).hasSize(1);
+		assertThat(constraints.get(0)).satisfies(constraintViolation -> {
+			assertThat(constraintViolation.getPropertyPath()).hasToString("extension");
+			assertThat(constraintViolation.getMessage()).isEqualTo("must not be blank");
+		});
+	}
 
-        var constraints = List.copyOf(validator.validate(request));
-        assertThat(constraints).hasSize(1);
-        assertThat(constraints.get(0)).satisfies(constraintViolation -> {
-            assertThat(constraintViolation.getPropertyPath().toString()).isEqualTo("mimeType");
-            assertThat(constraintViolation.getMessage()).isEqualTo("must not be blank");
-        });
-    }
+	@Test
+	void testValidationWithInvalidMimeType() {
+		final var request = buildAttachmentRequest(req -> req.setMimeType(null));
 
-    @Test
-    void testValidationWithInvalidFile() {
-        var request = buildAttachmentRequest(req -> req.setFile(null));
+		final var constraints = List.copyOf(validator.validate(request));
+		assertThat(constraints).hasSize(1);
+		assertThat(constraints.get(0)).satisfies(constraintViolation -> {
+			assertThat(constraintViolation.getPropertyPath()).hasToString("mimeType");
+			assertThat(constraintViolation.getMessage()).isEqualTo("must not be blank");
+		});
+	}
 
-        var constraints = List.copyOf(validator.validate(request));
-        assertThat(constraints).hasSize(1);
-        assertThat(constraints.get(0)).satisfies(constraintViolation -> {
-            assertThat(constraintViolation.getPropertyPath().toString()).isEqualTo("file");
-            assertThat(constraintViolation.getMessage()).isEqualTo("must not be blank");
-        });
-    }
+	@Test
+	void testValidationWithInvalidFile() {
+		final var request = buildAttachmentRequest(req -> req.setFile(null));
+
+		final var constraints = List.copyOf(validator.validate(request));
+		assertThat(constraints).hasSize(1);
+		assertThat(constraints.get(0)).satisfies(constraintViolation -> {
+			assertThat(constraintViolation.getPropertyPath()).hasToString("file");
+			assertThat(constraintViolation.getMessage()).isEqualTo("must not be blank");
+		});
+	}
 }
