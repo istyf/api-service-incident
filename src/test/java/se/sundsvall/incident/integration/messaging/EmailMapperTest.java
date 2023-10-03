@@ -3,7 +3,6 @@ package se.sundsvall.incident.integration.messaging;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.incident.TestDataFactory.buildAttachmentDto;
-import static se.sundsvall.incident.TestDataFactory.buildAttachmentEntityList;
 import static se.sundsvall.incident.TestDataFactory.buildIncidentDto;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +46,6 @@ class EmailMapperTest {
 	@Test
 	void toEmailDto() {
 		final var dto = buildIncidentDto();
-		final var attachmentlist = buildAttachmentEntityList(2);
 		when(properties.getSenderName()).thenReturn("someEmailName");
 		when(properties.getSenderEmailAddress()).thenReturn("someemail@host.se");
 		when(properties.getRecipientEmailAddress()).thenReturn("someemail@recipent.se");

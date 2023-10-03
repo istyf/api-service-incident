@@ -1,5 +1,13 @@
 package se.sundsvall.incident.integration.db.entity;
 
+import java.io.Serializable;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,14 +16,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import se.sundsvall.incident.dto.Category;
 import se.sundsvall.incident.dto.Status;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import java.io.Serializable;
 
 @Entity
 @Table(name = "Errands")
@@ -26,45 +26,47 @@ import java.io.Serializable;
 @Setter
 public class IncidentEntity implements Serializable {
 
-    @Id
-    @Column(name = "IncidentId")
-    private String incidentId;
+	private static final long serialVersionUID = -8817006765529811100L;
 
-    @Column(name = "externalCaseId")
-    private String externalCaseId;
+	@Id
+	@Column(name = "IncidentId")
+	private String incidentId;
 
-    @Column(name = "PersonId")
-    private String personID;
+	@Column(name = "externalCaseId")
+	private String externalCaseId;
 
-    @Column(name = "Created")
-    private String created;
+	@Column(name = "PersonId")
+	private String personID;
 
-    @Column(name = "PhoneNumber")
-    private String phoneNumber;
+	@Column(name = "Created")
+	private String created;
 
-    @Column(name = "Email")
-    private String email;
+	@Column(name = "PhoneNumber")
+	private String phoneNumber;
 
-    @Column(name = "ContactMethod")
-    private String contactMethod;
+	@Column(name = "Email")
+	private String email;
 
-    @Column(name = "Updated")
-    private String updated;
+	@Column(name = "ContactMethod")
+	private String contactMethod;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "Category")
-    private Category category;
+	@Column(name = "Updated")
+	private String updated;
 
-    @Column(name = "Description")
-    private String description;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "Category")
+	private Category category;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "Status")
-    private Status status;
+	@Column(name = "Description")
+	private String description;
 
-    @Column(name = "MapCoordinates")
-    private String mapCoordinates;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "Status")
+	private Status status;
 
-    @Column(name = "Feedback")
-    private String feedback;
+	@Column(name = "MapCoordinates")
+	private String mapCoordinates;
+
+	@Column(name = "Feedback")
+	private String feedback;
 }
