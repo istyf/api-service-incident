@@ -21,24 +21,34 @@ import lombok.NoArgsConstructor;
 @Getter
 public class AttachmentEntity implements Serializable {
 
+	private static final long serialVersionUID = -715316649109663678L;
+
 	@Id
 	@GeneratedValue
 	@Column(name = "ID")
 	private Integer id;
+
 	@Column(name = "IncidentId")
 	private String incidentId;
+
 	@Column(name = "category")
 	private String category;
+
 	@Column(name = "extension")
 	private String extension;
+
 	@Column(name = "mimetype")
 	private String mimeType;
+
 	@Column(name = "note")
 	private String note;
+
 	@Column(name = "file")
 	private String file;
+
 	@Column(name = "name")
 	private String name;
+
 	@Column(name = "Created")
 	private String created;
 }
