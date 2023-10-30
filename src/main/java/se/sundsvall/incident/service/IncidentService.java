@@ -32,11 +32,11 @@ public class IncidentService {
 	private final AttachmentRepository attachmentRepository;
 	private final Mapper mapper;
 
-	public IncidentService(IncidentRepository incidentRepository,
-
-		LifeBuoyIntegration lifeBuoyIntegration,
-		MessagingIntegration messagingIntegration, Mapper mapper,
-		AttachmentRepository attachmentRepository) {
+	public IncidentService(final IncidentRepository incidentRepository,
+		final LifeBuoyIntegration lifeBuoyIntegration,
+		final MessagingIntegration messagingIntegration,
+		final Mapper mapper,
+		final AttachmentRepository attachmentRepository) {
 		this.incidentRepository = incidentRepository;
 		this.lifeBuoyIntegration = lifeBuoyIntegration;
 		this.messagingIntegration = messagingIntegration;
@@ -44,11 +44,11 @@ public class IncidentService {
 		this.attachmentRepository = attachmentRepository;
 	}
 
-	public Optional<IncidentDto> getOepIncidentstatus(String externalCaseId) {
+	public Optional<IncidentDto> getOepIncidentStatus(final String externalCaseId) {
 		return incidentRepository.findIncidentEntityByExternalCaseId(externalCaseId).map(mapper::toIncidentDto);
 	}
 
-	public IncidentDto sendIncident(IncidentSaveRequest request) {
+	public IncidentDto sendIncident(final IncidentSaveRequest request) {
 		final var entity = mapper.toEntity(request);
 
 		final List<AttachmentEntity> attachmentList = Optional.ofNullable(request.getAttachments()).orElse(List.of())
@@ -59,7 +59,7 @@ public class IncidentService {
 		try {
 			switch (entity.getCategory()) {
 				case LIVBAT, LIVBOJ -> entity.setExternalCaseId(lifeBuoyIntegration.sendLifeBuoy(mapper.toIncidentDto(entity)));
-				case VATTENMATARE -> messagingIntegration.sendMSVAEmail(mapper.toIncidentDto(entity));
+				case VATTENMATARE, BRADD_OVERVAKNINGS_LARM -> messagingIntegration.sendMSVAEmail(mapper.toIncidentDto(entity));
 				default -> messagingIntegration.sendEmail(mapper.toIncidentDto(entity, attachmentList));
 			}
 		} catch (final Exception e) {
@@ -76,28 +76,28 @@ public class IncidentService {
 			.build();
 	}
 
-	public Optional<IncidentDto> getIncident(String incidentId) {
+	public Optional<IncidentDto> getIncident(final String incidentId) {
 		return incidentRepository.findById(incidentId)
 			.map((IncidentEntity incidentEntity) -> mapper.toIncidentDto(incidentEntity, attachmentRepository.findAllByIncidentId(incidentId)));
 	}
 
-	public void updateIncidentStatus(String incidentId, Integer statusid) {
+	public void updateIncidentStatus(final String incidentId, final Integer statusId) {
 		incidentRepository.findById(incidentId)
 			.ifPresent(entity -> {
-				entity.setStatus(Status.forValue(statusid));
+				entity.setStatus(Status.forValue(statusId));
 				entity.setUpdated(LocalDateTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 				incidentRepository.save(entity);
 			});
 	}
 
-	public List<IncidentDto> getIncidents(int offset, int limit) {
+	public List<IncidentDto> getIncidents(final int offset, final int limit) {
 		return incidentRepository.findAll(PageRequest.of(offset, limit))
 			.stream()
 			.map((IncidentEntity incidentEntity) -> mapper.toIncidentDto(incidentEntity, attachmentRepository.findAllByIncidentId(incidentEntity.getIncidentId())))
 			.toList();
 	}
 
-	public void updateIncidentFeedback(String incidentId, String feedback) {
+	public void updateIncidentFeedback(final String incidentId, final String feedback) {
 		incidentRepository.findById(incidentId)
 			.ifPresent(entity -> {
 				entity.setFeedback(feedback);
