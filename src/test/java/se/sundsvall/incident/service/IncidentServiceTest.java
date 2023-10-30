@@ -57,15 +57,12 @@ class IncidentServiceTest {
 	@InjectMocks
 	private IncidentService incidentService;
 
-	@Mock(answer = Answers.CALLS_REAL_METHODS)
-	private Mapper mockMapper;
-
 	@Test
 	void getOepIncidentstatus() {
 		final var incidentEntity = buildIncidentEntity(Category.VATTENMATARE);
 		when(incidentRepository.findIncidentEntityByExternalCaseId(anyString())).thenReturn(Optional.of(incidentEntity));
 
-		final var response = incidentService.getOepIncidentstatus("123").orElse(null);
+		final var response = incidentService.getOepIncidentStatus("123").orElse(null);
 
 		assertThat(response).isNotNull();
 		assertThat(response.getIncidentId()).isEqualTo(incidentEntity.getIncidentId());
@@ -92,6 +89,21 @@ class IncidentServiceTest {
 	void sendMSVIncident() {
 		final var incidentSaveRequest = buildIncidentSaveRequest(Category.VATTENMATARE);
 		final var incidentEntity = buildIncidentEntity(Category.VATTENMATARE);
+		when(incidentRepository.save(any())).thenReturn(incidentEntity);
+
+		doNothing().when(messagingIntegration).sendMSVAEmail(any(IncidentDto.class));
+
+		final var response = incidentService.sendIncident(incidentSaveRequest);
+		assertThat(response).isNotNull();
+		assertThat(response.getStatusText()).isEqualTo(Status.INSKICKAT.getLabel());
+		verify(incidentRepository, times(1)).save(any());
+		verify(messagingIntegration, times(1)).sendMSVAEmail(any(IncidentDto.class));
+	}
+
+	@Test
+	void sendMSVIncident2() {
+		final var incidentSaveRequest = buildIncidentSaveRequest(Category.BRADD_OVERVAKNINGS_LARM);
+		final var incidentEntity = buildIncidentEntity(Category.BRADD_OVERVAKNINGS_LARM);
 		when(incidentRepository.save(any())).thenReturn(incidentEntity);
 
 		doNothing().when(messagingIntegration).sendMSVAEmail(any(IncidentDto.class));

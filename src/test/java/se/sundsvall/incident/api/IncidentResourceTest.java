@@ -44,7 +44,7 @@ class IncidentResourceTest {
 	void getStatusForOeP() {
 
 		final var incidentDto = buildIncidentDto();
-		when(mockIncidentService.getOepIncidentstatus(anyString())).thenReturn(Optional.of(incidentDto));
+		when(mockIncidentService.getOepIncidentStatus(anyString())).thenReturn(Optional.of(incidentDto));
 		final var response = incidentResource.getStatusForOeP(INCIDENTID);
 		assertThat(response).isNotNull();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -54,7 +54,7 @@ class IncidentResourceTest {
 		assertThat(response.getBody().getStatusId()).isEqualTo(incidentDto.getStatusId());
 		assertThat(response.getBody().getExternalCaseId()).isEqualTo(incidentDto.getExternalCaseId());
 
-		verify(mockIncidentService, times(1)).getOepIncidentstatus(anyString());
+		verify(mockIncidentService, times(1)).getOepIncidentStatus(anyString());
 	}
 
 	@Test

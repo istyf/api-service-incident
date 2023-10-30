@@ -58,7 +58,7 @@ public class IncidentResource {
 		content = @Content(schema = @Schema(implementation = Problem.class)))
 	@GetMapping("/internal/oep/status/{externalCaseId}")
 	ResponseEntity<IncidentOepResponse> getStatusForOeP(@PathVariable(name = "externalCaseId") String externalCaseId) {
-		return incidentService.getOepIncidentstatus(externalCaseId)
+		return incidentService.getOepIncidentStatus(externalCaseId)
 			.map(oepIncidentDto -> IncidentOepResponse.builder()
 				.withIncidentId(oepIncidentDto.getIncidentId())
 				.withStatusId(oepIncidentDto.getStatusId())

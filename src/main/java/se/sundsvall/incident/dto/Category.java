@@ -20,7 +20,8 @@ public enum Category {
     OVRIGT(13, "Övrigt"),
     LIVBOJ(15, "Livboj"),
     LIVBAT(16, "Livbåt"),
-    VATTENMATARE(17, "Felanmälan vattenmätare");
+    VATTENMATARE(17, "Felanmälan vattenmätare"),
+    BRADD_OVERVAKNINGS_LARM(18, "Bräddövervakningslarm");
 
     private final int value;
     private final String label;
@@ -31,7 +32,7 @@ public enum Category {
     }
 
     @JsonCreator
-    public static Category forValue(int value) {
+    public static Category forValue(final int value) {
         return Arrays.stream(Category.values())
                 .filter(status -> value == status.value)
                 .findFirst()
