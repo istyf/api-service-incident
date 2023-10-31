@@ -1,21 +1,21 @@
 package se.sundsvall.incident.integration.db.entity;
 
-import java.io.Serializable;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
+import se.sundsvall.incident.dto.Category;
+import se.sundsvall.incident.dto.Status;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import se.sundsvall.incident.dto.Category;
-import se.sundsvall.incident.dto.Status;
 
 @Entity
 @Table(name = "Errands")
@@ -24,9 +24,7 @@ import se.sundsvall.incident.dto.Status;
 @Builder(setterPrefix = "with")
 @Getter
 @Setter
-public class IncidentEntity implements Serializable {
-
-	private static final long serialVersionUID = -8817006765529811100L;
+public class IncidentEntity {
 
 	@Id
 	@Column(name = "IncidentId")

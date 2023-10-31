@@ -16,6 +16,7 @@ import static se.sundsvall.incident.TestDataFactory.buildListIncidentEntities;
 
 import java.util.Optional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -25,8 +26,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import se.sundsvall.incident.api.model.IncidentSaveRequest;
 import se.sundsvall.incident.dto.Category;
@@ -56,6 +55,9 @@ class IncidentServiceTest {
 
 	@InjectMocks
 	private IncidentService incidentService;
+
+	@Mock(answer = Answers.CALLS_REAL_METHODS)
+	private Mapper mapper;
 
 	@Test
 	void getOepIncidentstatus() {
