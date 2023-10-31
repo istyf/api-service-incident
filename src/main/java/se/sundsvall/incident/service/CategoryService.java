@@ -18,6 +18,7 @@ import se.sundsvall.incident.service.mapper.Mapper;
 @Service
 public class CategoryService {
 
+	private static final String CATEGORY_NOT_FOUND = "Category with id: %s not found";
 	private final CategoryRepository categoryRepository;
 	private final Mapper mapper;
 
@@ -28,7 +29,7 @@ public class CategoryService {
 
 	public CategoryDTO fetchCategoryById(final Integer id) {
 		var categoryEntity = categoryRepository.findById(id)
-			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, "Category with id: " + id + " not found"));
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, CATEGORY_NOT_FOUND.formatted(id)));
 		return mapper.toCategoryDto(categoryEntity);
 	}
 
@@ -45,14 +46,14 @@ public class CategoryService {
 
 	public void deleteCategoryById(final Integer id) {
 		if (!categoryRepository.existsById(id)) {
-			throw Problem.valueOf(NOT_FOUND, "Category with id: " + id + " not found");
+			throw Problem.valueOf(NOT_FOUND, CATEGORY_NOT_FOUND.formatted(id));
 		}
 		categoryRepository.deleteById(id);
 	}
 
 	public CategoryDTO patchCategory(final Integer id, final CategoryPatch patch) {
 		var categoryEntity = categoryRepository.findById(id)
-			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, "Category with id: " + id + " not found"));
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, CATEGORY_NOT_FOUND.formatted(id)));
 		var patchedEntity = categoryRepository.save(patchEntity(categoryEntity, patch));
 		return mapper.toCategoryDto(patchedEntity);
 	}

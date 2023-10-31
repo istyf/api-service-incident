@@ -119,38 +119,14 @@ class AttachmentEntityTest {
 		var category = entity.getCategory();
 		var incidentId = entity.getIncidentId();
 
-		assertThat(id).satisfies(i -> {
-			assertThat(i).isNotNull();
-			assertThat(i).isEqualTo(entity.getId());
-		});
-		assertThat(name).satisfies(n -> {
-			assertThat(n).isNotNull();
-			assertThat(n).isEqualTo(entity.getName());
-		});
-		assertThat(mimeType).satisfies(mt -> {
-			assertThat(mt).isNotNull();
-			assertThat(mt).isEqualTo(entity.getMimeType());
-		});
-		assertThat(note).satisfies(n -> {
-			assertThat(n).isNotNull();
-			assertThat(n).isEqualTo(entity.getNote());
-		});
-		assertThat(extension).satisfies(e -> {
-			assertThat(e).isNotNull();
-			assertThat(e).isEqualTo(entity.getExtension());
-		});
-		assertThat(file).satisfies(f -> {
-			assertThat(f).isNotNull();
-			assertThat(f).isEqualTo(entity.getFile());
-		});
-		assertThat(category).satisfies(c -> {
-			assertThat(c).isNotNull();
-			assertThat(c).isEqualTo(entity.getCategory());
-		});
-		assertThat(incidentId).satisfies(i -> {
-			assertThat(i).isNotNull();
-			assertThat(i).isEqualTo(entity.getIncidentId());
-		});
+		assertThat(id).isEqualTo(entity.getId());
+		assertThat(name).isEqualTo(entity.getName());
+		assertThat(mimeType).isEqualTo(entity.getMimeType());
+		assertThat(note).isEqualTo(entity.getNote());
+		assertThat(extension).isEqualTo(entity.getExtension());
+		assertThat(file).isEqualTo(entity.getFile());
+		assertThat(category).isEqualTo(entity.getCategory());
+		assertThat(incidentId).isEqualTo(entity.getIncidentId());
 	}
 
 }

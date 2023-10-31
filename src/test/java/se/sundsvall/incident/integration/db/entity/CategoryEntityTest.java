@@ -65,22 +65,10 @@ class CategoryEntityTest {
 		var title = entity.getTitle();
 		var forwardTo = entity.getForwardTo();
 
-		assertThat(categoryId).satisfies(id -> {
-			assertThat(id).isNotNull();
-			assertThat(id).isEqualTo(entity.getCategoryId());
-		});
-		assertThat(label).satisfies(l -> {
-			assertThat(l).isNotNull();
-			assertThat(l).isEqualTo(entity.getLabel());
-		});
-		assertThat(title).satisfies(t -> {
-			assertThat(t).isNotNull();
-			assertThat(t).isEqualTo(entity.getTitle());
-		});
-		assertThat(forwardTo).satisfies(ft -> {
-			assertThat(ft).isNotNull();
-			assertThat(ft).isEqualTo(entity.getForwardTo());
-		});
+		assertThat(categoryId).isEqualTo(entity.getCategoryId());
+		assertThat(label).isEqualTo(entity.getLabel());
+		assertThat(title).isEqualTo(entity.getTitle());
+		assertThat(forwardTo).isEqualTo(entity.getForwardTo());
 	}
 
 	@Test
@@ -95,7 +83,6 @@ class CategoryEntityTest {
 		assertThat(entity.getTitle()).isEqualTo("new title");
 		assertThat(entity.getLabel()).isEqualTo("new label");
 		assertThat(entity.getForwardTo()).isEqualTo("new email");
-
 	}
 
 }

@@ -47,9 +47,8 @@ class CategoryServiceTest {
 			.thenReturn(Optional.ofNullable(createCategoryEntity()));
 
 		var result = categoryService.fetchCategoryById(5);
-
-		assertThat(result).isNotNull();
-		assertThat(result).isInstanceOf(CategoryDTO.class);
+		
+		assertThat(result).isInstanceOf(CategoryDTO.class).isNotNull();
 
 		verify(mockCategoryRepository, times(1)).findById(any());
 		verify(mockMapper, times(1)).toCategoryDto(any());
