@@ -1,16 +1,17 @@
 package se.sundsvall.incident.api.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder(setterPrefix = "with", builderClassName = "Builder")
-@JsonDeserialize(builder = IncidentListResponse.Builder.class)
-@AllArgsConstructor
+@Builder(setterPrefix = "with")
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 public class IncidentListResponse {
-    private String incidentId;
-    private String externalCaseId;
-    private String status;
+
+	private String incidentId;
+	private String externalCaseId;
+	private String status;
+
 }

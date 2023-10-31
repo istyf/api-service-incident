@@ -7,17 +7,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import generated.se.sundsvall.messaging.EmailAttachment;
-import generated.se.sundsvall.messaging.EmailRequest;
-import generated.se.sundsvall.messaging.EmailSender;
 import se.sundsvall.incident.api.model.AttachmentRequest;
+import se.sundsvall.incident.api.model.CategoryDTO;
+import se.sundsvall.incident.api.model.CategoryPatch;
+import se.sundsvall.incident.api.model.CategoryPost;
 import se.sundsvall.incident.api.model.IncidentSaveRequest;
 import se.sundsvall.incident.dto.AttachmentDto;
 import se.sundsvall.incident.dto.Category;
 import se.sundsvall.incident.dto.IncidentDto;
 import se.sundsvall.incident.dto.Status;
 import se.sundsvall.incident.integration.db.entity.AttachmentEntity;
+import se.sundsvall.incident.integration.db.entity.CategoryEntity;
 import se.sundsvall.incident.integration.db.entity.IncidentEntity;
+
+import generated.se.sundsvall.messaging.EmailAttachment;
+import generated.se.sundsvall.messaging.EmailRequest;
+import generated.se.sundsvall.messaging.EmailSender;
 
 public final class TestDataFactory {
 	public static final String INCIDENTID = "ef60e3e-d245-4d79-b350-fbabc022b249";
@@ -176,4 +181,30 @@ public final class TestDataFactory {
 			.attachments(List.of(new EmailAttachment("someName", "SomeContent")
 				.contentType("someContentType")));
 	}
+
+	public static CategoryDTO createCategoryDTO() {
+		return CategoryDTO.builder()
+			.withForwardTo("someone@email.com")
+			.withTitle("This-is-a-title")
+			.withLabel("This-is-a-label")
+			.build();
+	}
+
+	public static CategoryPost createCategoryPost() {
+		return new CategoryPost("Title", "Label", "ForwardTo");
+	}
+
+	public static CategoryPatch createCategoryPatch() {
+		return new CategoryPatch("New title", null, null);
+	}
+
+	public static CategoryEntity createCategoryEntity() {
+		return CategoryEntity.builder()
+			.withCategoryId(5)
+			.withLabel("this is a label")
+			.withTitle("this is a title")
+			.withForwardTo("nowhere@nowhere.com")
+			.build();
+	}
+
 }

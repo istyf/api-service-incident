@@ -4,24 +4,26 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
 import java.util.List;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import se.sundsvall.dept44.common.validators.annotation.ValidMobileNumber;
+import se.sundsvall.incident.api.model.validation.ValidCoords;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import se.sundsvall.dept44.common.validators.annotation.ValidMobileNumber;
-import se.sundsvall.incident.api.model.validation.ValidCoords;
 
 @Getter
 @Setter
 @SuperBuilder(setterPrefix = "with")
 @NoArgsConstructor
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 public class IncidentSaveRequest {
 
 	@Schema(description = "A uuid string representing a person", example = "58f96da8-6d76-4fa6-bb92-64f71fdc6aa5", requiredMode = REQUIRED)
@@ -55,4 +57,5 @@ public class IncidentSaveRequest {
 
 	@Schema(description = "Attachments")
 	private List<AttachmentRequest> attachments;
+
 }

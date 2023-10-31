@@ -58,9 +58,12 @@ public class IncidentService {
 
 		try {
 			switch (entity.getCategory()) {
-				case LIVBAT, LIVBOJ -> entity.setExternalCaseId(lifeBuoyIntegration.sendLifeBuoy(mapper.toIncidentDto(entity)));
-				case VATTENMATARE, BRADD_OVERVAKNINGS_LARM -> messagingIntegration.sendMSVAEmail(mapper.toIncidentDto(entity));
-				default -> messagingIntegration.sendEmail(mapper.toIncidentDto(entity, attachmentList));
+				case LIVBAT, LIVBOJ ->
+					entity.setExternalCaseId(lifeBuoyIntegration.sendLifeBuoy(mapper.toIncidentDto(entity)));
+				case VATTENMATARE ->
+					messagingIntegration.sendMSVAEmail(mapper.toIncidentDto(entity));
+				default ->
+					messagingIntegration.sendEmail(mapper.toIncidentDto(entity, attachmentList));
 			}
 		} catch (final Exception e) {
 			entity.setStatus(Status.ERROR);

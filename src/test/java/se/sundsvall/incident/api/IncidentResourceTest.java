@@ -16,9 +16,9 @@ import static se.sundsvall.incident.TestDataFactory.buildListOfIncidentDto;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
@@ -31,14 +31,10 @@ import se.sundsvall.incident.service.IncidentService;
 class IncidentResourceTest {
 
 	@Mock
-	IncidentService mockIncidentService;
+	private IncidentService mockIncidentService;
+
+	@InjectMocks
 	private IncidentResource incidentResource;
-
-	@BeforeEach
-	void setUp() {
-		incidentResource = new IncidentResource(mockIncidentService);
-
-	}
 
 	@Test
 	void getStatusForOeP() {
