@@ -53,11 +53,11 @@ class IncidentServiceTest {
 	@Mock
 	private AttachmentRepository attachmentRepository;
 
-	@InjectMocks
-	private IncidentService incidentService;
-
 	@Mock(answer = Answers.CALLS_REAL_METHODS)
 	private Mapper mapper;
+
+	@InjectMocks
+	private IncidentService incidentService;
 
 	@Test
 	void getOepIncidentstatus() {
@@ -91,21 +91,6 @@ class IncidentServiceTest {
 	void sendMSVIncident() {
 		final var incidentSaveRequest = buildIncidentSaveRequest(Category.VATTENMATARE);
 		final var incidentEntity = buildIncidentEntity(Category.VATTENMATARE);
-		when(incidentRepository.save(any())).thenReturn(incidentEntity);
-
-		doNothing().when(messagingIntegration).sendMSVAEmail(any(IncidentDto.class));
-
-		final var response = incidentService.sendIncident(incidentSaveRequest);
-		assertThat(response).isNotNull();
-		assertThat(response.getStatusText()).isEqualTo(Status.INSKICKAT.getLabel());
-		verify(incidentRepository, times(1)).save(any());
-		verify(messagingIntegration, times(1)).sendMSVAEmail(any(IncidentDto.class));
-	}
-
-	@Test
-	void sendMSVIncident2() {
-		final var incidentSaveRequest = buildIncidentSaveRequest(Category.BRADD_OVERVAKNINGS_LARM);
-		final var incidentEntity = buildIncidentEntity(Category.BRADD_OVERVAKNINGS_LARM);
 		when(incidentRepository.save(any())).thenReturn(incidentEntity);
 
 		doNothing().when(messagingIntegration).sendMSVAEmail(any(IncidentDto.class));

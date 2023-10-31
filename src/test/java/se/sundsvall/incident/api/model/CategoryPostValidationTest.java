@@ -28,7 +28,7 @@ class CategoryPostValidationTest {
 
 		var constraints = List.copyOf(validator.validate(categoryPost));
 
-		assertThat(constraints).hasSize(0);
+		assertThat(constraints).isEmpty();
 	}
 
 	@Test

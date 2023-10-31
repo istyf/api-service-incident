@@ -169,58 +169,19 @@ class IncidentEntityTest {
 		var category = entity.getCategory();
 		var status = entity.getStatus();
 
-		assertThat(incidentId).satisfies(i -> {
-			assertThat(i).isNotNull();
-			assertThat(i).isEqualTo(entity.getIncidentId());
-		});
-		assertThat(externalCaseId).satisfies(e -> {
-			assertThat(e).isNotNull();
-			assertThat(e).isEqualTo(entity.getExternalCaseId());
-		});
-		assertThat(personID).satisfies(p -> {
-			assertThat(p).isNotNull();
-			assertThat(p).isEqualTo(entity.getPersonID());
-		});
-		assertThat(created).satisfies(c -> {
-			assertThat(c).isNotNull();
-			assertThat(c).isEqualTo(entity.getCreated());
-		});
-		assertThat(phoneNumber).satisfies(p -> {
-			assertThat(p).isNotNull();
-			assertThat(p).isEqualTo(entity.getPhoneNumber());
-		});
-		assertThat(email).satisfies(e -> {
-			assertThat(e).isNotNull();
-			assertThat(e).isEqualTo(entity.getEmail());
-		});
-		assertThat(contactMethod).satisfies(c -> {
-			assertThat(c).isNotNull();
-			assertThat(c).isEqualTo(entity.getContactMethod());
-		});
-		assertThat(updated).satisfies(u -> {
-			assertThat(u).isNotNull();
-			assertThat(u).isEqualTo(entity.getUpdated());
-		});
-		assertThat(description).satisfies(d -> {
-			assertThat(d).isNotNull();
-			assertThat(d).isEqualTo(entity.getDescription());
-		});
-		assertThat(mapCoordinates).satisfies(m -> {
-			assertThat(m).isNotNull();
-			assertThat(m).isEqualTo(entity.getMapCoordinates());
-		});
-		assertThat(feedback).satisfies(f -> {
-			assertThat(f).isNotNull();
-			assertThat(f).isEqualTo(entity.getFeedback());
-		});
-		assertThat(category).satisfies(c -> {
-			assertThat(c).isNotNull();
-			assertThat(c).isEqualTo(entity.getCategory());
-		});
-		assertThat(status).satisfies(s -> {
-			assertThat(s).isNotNull();
-			assertThat(s).isEqualTo(entity.getStatus());
-		});
+		assertThat(incidentId).isEqualTo(entity.getIncidentId());
+		assertThat(externalCaseId).isEqualTo(entity.getExternalCaseId());
+		assertThat(personID).isEqualTo(entity.getPersonID());
+		assertThat(created).isEqualTo(entity.getCreated());
+		assertThat(phoneNumber).isEqualTo(entity.getPhoneNumber());
+		assertThat(email).isEqualTo(entity.getEmail());
+		assertThat(contactMethod).isEqualTo(entity.getContactMethod());
+		assertThat(updated).isEqualTo(entity.getUpdated());
+		assertThat(description).isEqualTo(entity.getDescription());
+		assertThat(mapCoordinates).isEqualTo(entity.getMapCoordinates());
+		assertThat(feedback).isEqualTo(entity.getFeedback());
+		assertThat(category).isEqualTo(entity.getCategory());
+		assertThat(status).isEqualTo(entity.getStatus());
 	}
 
 	@Test

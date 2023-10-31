@@ -28,7 +28,7 @@ class CategoryPatchValidationTest {
 
 		var constraints = List.copyOf(validator.validate(categoryPatch));
 
-		assertThat(constraints).hasSize(0);
+		assertThat(constraints).isEmpty();
 	}
 
 	@Test
@@ -37,7 +37,7 @@ class CategoryPatchValidationTest {
 
 		var constraints = List.copyOf(validator.validate(categoryPatch));
 
-		assertThat(constraints).hasSize(0);
+		assertThat(constraints).isEmpty();
 	}
 
 	@Test
