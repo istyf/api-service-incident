@@ -1,18 +1,35 @@
 package se.sundsvall.incident.integration.db.entity;
 
+import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanConstructor;
+import static com.google.code.beanmatchers.BeanMatchers.hasValidGettersAndSetters;
+import static com.google.code.beanmatchers.BeanMatchers.registerValueGenerator;
+import static java.time.LocalDateTime.now;
+import static java.time.ZoneId.systemDefault;
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.BDDAssertions.within;
+import static org.hamcrest.CoreMatchers.allOf;
 import static se.sundsvall.incident.TestDataFactory.buildAttachmentEntity;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
+import java.util.Random;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class AttachmentEntityTest {
+
+	@BeforeAll
+	static void setup() {
+		registerValueGenerator(() -> now().plusDays(new Random().nextInt()), LocalDateTime.class);
+	}
 
 	@Test
 	void testIdHasCorrectAnnotationsAndValues() {
@@ -23,8 +40,8 @@ class AttachmentEntityTest {
 		final Column column = id.getDeclaredAnnotation(Column.class);
 		final GeneratedValue generatedValue = id.getDeclaredAnnotation(GeneratedValue.class);
 
-		assertThat(column.name()).isEqualTo("ID");
-		assertThat(generatedValue.strategy()).isEqualTo(GenerationType.AUTO);
+		assertThat(column.name()).isEqualTo("id");
+		assertThat(generatedValue.strategy()).isEqualTo(GenerationType.IDENTITY);
 	}
 
 	@Test
@@ -34,7 +51,7 @@ class AttachmentEntityTest {
 		assertThat(incidentId.getType()).isEqualTo(String.class);
 
 		final Column column = incidentId.getDeclaredAnnotation(Column.class);
-		assertThat(column.name()).isEqualTo("IncidentId");
+		assertThat(column.name()).isEqualTo("incident_id");
 	}
 
 	@Test
@@ -64,7 +81,7 @@ class AttachmentEntityTest {
 		assertThat(mimeType.getType()).isEqualTo(String.class);
 
 		final Column column = mimeType.getDeclaredAnnotation(Column.class);
-		assertThat(column.name()).isEqualTo("mimetype");
+		assertThat(column.name()).isEqualTo("mime_type");
 	}
 
 	@Test
@@ -101,32 +118,25 @@ class AttachmentEntityTest {
 	void testCreatedHasCorrectAnnotationsAndValues() {
 		final Field created = FieldUtils.getDeclaredField(AttachmentEntity.class, "created", true);
 		assertThat(created.getAnnotations()).hasSize(1);
-		assertThat(created.getType()).isEqualTo(String.class);
+		assertThat(created.getType()).isEqualTo(LocalDateTime.class);
 
 		final Column column = created.getDeclaredAnnotation(Column.class);
-		assertThat(column.name()).isEqualTo("Created");
+		assertThat(column.name()).isEqualTo("created");
 	}
 
 	@Test
-	void getterTest() {
-		var entity = buildAttachmentEntity();
-		var id = entity.getId();
-		var name = entity.getName();
-		var mimeType = entity.getMimeType();
-		var note = entity.getNote();
-		var extension = entity.getExtension();
-		var file = entity.getFile();
-		var category = entity.getCategory();
-		var incidentId = entity.getIncidentId();
-
-		assertThat(id).isEqualTo(entity.getId());
-		assertThat(name).isEqualTo(entity.getName());
-		assertThat(mimeType).isEqualTo(entity.getMimeType());
-		assertThat(note).isEqualTo(entity.getNote());
-		assertThat(extension).isEqualTo(entity.getExtension());
-		assertThat(file).isEqualTo(entity.getFile());
-		assertThat(category).isEqualTo(entity.getCategory());
-		assertThat(incidentId).isEqualTo(entity.getIncidentId());
+	void testBean() {
+		MatcherAssert.assertThat(AttachmentEntity.class, allOf(
+			hasValidBeanConstructor(),
+			hasValidGettersAndSetters()));
 	}
 
+	@Test
+	void prePersistTest() {
+		var attachment = buildAttachmentEntity();
+		attachment.prePersist();
+
+		assertThat(attachment.getCreated()).isNotNull();
+		assertThat(attachment.getCreated()).isCloseTo(now(systemDefault()), within(2, SECONDS));
+	}
 }

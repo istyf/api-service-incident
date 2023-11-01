@@ -31,18 +31,10 @@ class CategoryPatchValidationTest {
 		assertThat(constraints).isEmpty();
 	}
 
-	@Test
-	void blankEmailTest() {
-		var categoryPatch = new CategoryPatch("", "", "");
-
-		var constraints = List.copyOf(validator.validate(categoryPatch));
-
-		assertThat(constraints).isEmpty();
-	}
 
 	@Test
 	void invalidEmailTest() {
-		var categoryPatch = new CategoryPatch("", "", "invalid email");
+		var categoryPatch = new CategoryPatch(null, null, "invalid email");
 
 		var constraints = List.copyOf(validator.validate(categoryPatch));
 
@@ -50,6 +42,41 @@ class CategoryPatchValidationTest {
 		assertThat(constraints.get(0)).satisfies(constraintViolation -> {
 			assertThat(constraintViolation.getPropertyPath()).hasToString("forwardTo");
 			assertThat(constraintViolation.getMessage()).startsWith("must be a well-formed email address");
+		});
+	}
+
+	@Test
+	void blankEmailTest() {
+		var categoryPatch = new CategoryPatch(null, null, "");
+
+		var constraints = List.copyOf(validator.validate(categoryPatch));
+
+		assertThat(constraints).isEmpty();
+	}
+
+	@Test
+	void blankTitleTest() {
+		var categoryPatch = new CategoryPatch("", null, null);
+
+		var constraints = List.copyOf(validator.validate(categoryPatch));
+
+		assertThat(constraints).hasSize(1);
+		assertThat(constraints.get(0)).satisfies(constraintViolation -> {
+			assertThat(constraintViolation.getPropertyPath()).hasToString("title");
+			assertThat(constraintViolation.getMessage()).startsWith("must be null or a not blank");
+		});
+	}
+
+	@Test
+	void blankLabelTest() {
+		var categoryPatch = new CategoryPatch(null, "", null);
+
+		var constraints = List.copyOf(validator.validate(categoryPatch));
+
+		assertThat(constraints).hasSize(1);
+		assertThat(constraints.get(0)).satisfies(constraintViolation -> {
+			assertThat(constraintViolation.getPropertyPath()).hasToString("label");
+			assertThat(constraintViolation.getMessage()).startsWith("must be null or a not blank");
 		});
 	}
 }

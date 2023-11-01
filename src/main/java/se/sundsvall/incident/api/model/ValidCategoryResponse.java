@@ -11,6 +11,6 @@ import lombok.Getter;
 public class ValidCategoryResponse {
 
 	private String category;
-	private Integer CATEGORY_ID;
+	private Integer categoryId;
 
 }

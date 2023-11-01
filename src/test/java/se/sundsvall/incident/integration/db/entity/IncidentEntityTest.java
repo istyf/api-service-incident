@@ -1,15 +1,29 @@
 package se.sundsvall.incident.integration.db.entity;
 
+import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanConstructor;
+import static com.google.code.beanmatchers.BeanMatchers.hasValidGettersAndSetters;
+import static com.google.code.beanmatchers.BeanMatchers.registerValueGenerator;
+import static java.time.LocalDateTime.now;
+import static java.time.ZoneId.systemDefault;
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.BDDAssertions.within;
+import static org.hamcrest.CoreMatchers.allOf;
 import static se.sundsvall.incident.TestDataFactory.buildIncidentEntity;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
+import java.util.Random;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import se.sundsvall.incident.dto.Category;
@@ -17,14 +31,21 @@ import se.sundsvall.incident.dto.Status;
 
 class IncidentEntityTest {
 
+	@BeforeAll
+	static void setup() {
+		registerValueGenerator(() -> now().plusDays(new Random().nextInt()), LocalDateTime.class);
+	}
+
 	@Test
 	void testIncidentIdHasCorrectAnnotationsAndValues() {
 		final Field incidentId = FieldUtils.getDeclaredField(IncidentEntity.class, "incidentId", true);
-		assertThat(incidentId.getAnnotations()).hasSize(2);
+		assertThat(incidentId.getAnnotations()).hasSize(3);
 		assertThat(incidentId.getType()).isEqualTo(String.class);
 
+		final GeneratedValue generatedValue = incidentId.getDeclaredAnnotation(GeneratedValue.class);
 		final Column column = incidentId.getDeclaredAnnotation(Column.class);
-		assertThat(column.name()).isEqualTo("IncidentId");
+		assertThat(generatedValue.strategy()).isEqualTo(GenerationType.UUID);
+		assertThat(column.name()).isEqualTo("incident_id");
 	}
 
 	@Test
@@ -34,27 +55,27 @@ class IncidentEntityTest {
 		assertThat(externalCaseId.getType()).isEqualTo(String.class);
 
 		final Column column = externalCaseId.getDeclaredAnnotation(Column.class);
-		assertThat(column.name()).isEqualTo("externalCaseId");
+		assertThat(column.name()).isEqualTo("external_case_id");
 	}
 
 	@Test
 	void testPersonIdHasCorrectAnnotationsAndValues() {
-		final Field personID = FieldUtils.getDeclaredField(IncidentEntity.class, "personID", true);
+		final Field personID = FieldUtils.getDeclaredField(IncidentEntity.class, "personId", true);
 		assertThat(personID.getAnnotations()).hasSize(1);
 		assertThat(personID.getType()).isEqualTo(String.class);
 
 		final Column column = personID.getDeclaredAnnotation(Column.class);
-		assertThat(column.name()).isEqualTo("PersonId");
+		assertThat(column.name()).isEqualTo("person_id");
 	}
 
 	@Test
 	void testCreatedHasCorrectAnnotationsAndValues() {
 		final Field created = FieldUtils.getDeclaredField(IncidentEntity.class, "created", true);
 		assertThat(created.getAnnotations()).hasSize(1);
-		assertThat(created.getType()).isEqualTo(String.class);
+		assertThat(created.getType()).isEqualTo(LocalDateTime.class);
 
 		final Column column = created.getDeclaredAnnotation(Column.class);
-		assertThat(column.name()).isEqualTo("Created");
+		assertThat(column.name()).isEqualTo("created");
 	}
 
 	@Test
@@ -64,7 +85,7 @@ class IncidentEntityTest {
 		assertThat(phoneNumber.getType()).isEqualTo(String.class);
 
 		final Column column = phoneNumber.getDeclaredAnnotation(Column.class);
-		assertThat(column.name()).isEqualTo("PhoneNumber");
+		assertThat(column.name()).isEqualTo("phone_number");
 	}
 
 	@Test
@@ -74,7 +95,7 @@ class IncidentEntityTest {
 		assertThat(email.getType()).isEqualTo(String.class);
 
 		final Column column = email.getDeclaredAnnotation(Column.class);
-		assertThat(column.name()).isEqualTo("Email");
+		assertThat(column.name()).isEqualTo("email");
 	}
 
 	@Test
@@ -84,17 +105,17 @@ class IncidentEntityTest {
 		assertThat(contactMethod.getType()).isEqualTo(String.class);
 
 		final Column column = contactMethod.getDeclaredAnnotation(Column.class);
-		assertThat(column.name()).isEqualTo("ContactMethod");
+		assertThat(column.name()).isEqualTo("contact_method");
 	}
 
 	@Test
 	void testUpdatedHasCorrectAnnotationsAndValues() {
 		final Field updated = FieldUtils.getDeclaredField(IncidentEntity.class, "updated", true);
 		assertThat(updated.getAnnotations()).hasSize(1);
-		assertThat(updated.getType()).isEqualTo(String.class);
+		assertThat(updated.getType()).isEqualTo(LocalDateTime.class);
 
 		final Column column = updated.getDeclaredAnnotation(Column.class);
-		assertThat(column.name()).isEqualTo("Updated");
+		assertThat(column.name()).isEqualTo("updated");
 	}
 
 	@Test
@@ -104,17 +125,17 @@ class IncidentEntityTest {
 		assertThat(description.getType()).isEqualTo(String.class);
 
 		final Column column = description.getDeclaredAnnotation(Column.class);
-		assertThat(column.name()).isEqualTo("Description");
+		assertThat(column.name()).isEqualTo("description");
 	}
 
 	@Test
 	void testMapCoordinatesHasCorrectAnnotationsAndValues() {
-		final Field mapCoordinates = FieldUtils.getDeclaredField(IncidentEntity.class, "mapCoordinates", true);
+		final Field mapCoordinates = FieldUtils.getDeclaredField(IncidentEntity.class, "coordinates", true);
 		assertThat(mapCoordinates.getAnnotations()).hasSize(1);
 		assertThat(mapCoordinates.getType()).isEqualTo(String.class);
 
 		final Column column = mapCoordinates.getDeclaredAnnotation(Column.class);
-		assertThat(column.name()).isEqualTo("MapCoordinates");
+		assertThat(column.name()).isEqualTo("coordinates");
 	}
 
 	@Test
@@ -124,7 +145,7 @@ class IncidentEntityTest {
 		assertThat(feedback.getType()).isEqualTo(String.class);
 
 		final Column column = feedback.getDeclaredAnnotation(Column.class);
-		assertThat(column.name()).isEqualTo("Feedback");
+		assertThat(column.name()).isEqualTo("feedback");
 	}
 
 	@Test
@@ -136,7 +157,7 @@ class IncidentEntityTest {
 		final Enumerated enumerated = status.getDeclaredAnnotation(Enumerated.class);
 		final Column column = status.getDeclaredAnnotation(Column.class);
 		assertThat(enumerated.value()).isEqualTo(EnumType.STRING);
-		assertThat(column.name()).isEqualTo("Status");
+		assertThat(column.name()).isEqualTo("status");
 	}
 
 	@Test
@@ -148,73 +169,23 @@ class IncidentEntityTest {
 		final Enumerated enumerated = category.getDeclaredAnnotation(Enumerated.class);
 		final Column column = category.getDeclaredAnnotation(Column.class);
 		assertThat(enumerated.value()).isEqualTo(EnumType.STRING);
-		assertThat(column.name()).isEqualTo("Category");
-	}
-
-
-	@Test
-	void getterTest() {
-		var entity = buildIncidentEntity(Category.OVRIGT);
-		var incidentId = entity.getIncidentId();
-		var externalCaseId = entity.getExternalCaseId();
-		var personID = entity.getPersonID();
-		var created = entity.getCreated();
-		var phoneNumber = entity.getPhoneNumber();
-		var email = entity.getEmail();
-		var contactMethod = entity.getContactMethod();
-		var updated = entity.getUpdated();
-		var description = entity.getDescription();
-		var mapCoordinates = entity.getMapCoordinates();
-		var feedback = entity.getFeedback();
-		var category = entity.getCategory();
-		var status = entity.getStatus();
-
-		assertThat(incidentId).isEqualTo(entity.getIncidentId());
-		assertThat(externalCaseId).isEqualTo(entity.getExternalCaseId());
-		assertThat(personID).isEqualTo(entity.getPersonID());
-		assertThat(created).isEqualTo(entity.getCreated());
-		assertThat(phoneNumber).isEqualTo(entity.getPhoneNumber());
-		assertThat(email).isEqualTo(entity.getEmail());
-		assertThat(contactMethod).isEqualTo(entity.getContactMethod());
-		assertThat(updated).isEqualTo(entity.getUpdated());
-		assertThat(description).isEqualTo(entity.getDescription());
-		assertThat(mapCoordinates).isEqualTo(entity.getMapCoordinates());
-		assertThat(feedback).isEqualTo(entity.getFeedback());
-		assertThat(category).isEqualTo(entity.getCategory());
-		assertThat(status).isEqualTo(entity.getStatus());
+		assertThat(column.name()).isEqualTo("category");
 	}
 
 	@Test
-	void setterTest() {
-		var incident = new IncidentEntity();
-		incident.setIncidentId("incidentId");
-		incident.setExternalCaseId("externalCaseId");
-		incident.setPersonID("personId");
-		incident.setCreated("created");
-		incident.setPhoneNumber("phoneNumber");
-		incident.setEmail("email");
-		incident.setContactMethod("contactMethod");
-		incident.setUpdated("updated");
-		incident.setDescription("description");
-		incident.setMapCoordinates("mapCoordinates");
-		incident.setFeedback("feedback");
-		incident.setStatus(Status.SPARAT);
-		incident.setCategory(Category.OVRIGT);
-
-
-		assertThat(incident.getIncidentId()).isEqualTo("incidentId");
-		assertThat(incident.getExternalCaseId()).isEqualTo("externalCaseId");
-		assertThat(incident.getPersonID()).isEqualTo("personId");
-		assertThat(incident.getCreated()).isEqualTo("created");
-		assertThat(incident.getPhoneNumber()).isEqualTo("phoneNumber");
-		assertThat(incident.getEmail()).isEqualTo("email");
-		assertThat(incident.getContactMethod()).isEqualTo("contactMethod");
-		assertThat(incident.getUpdated()).isEqualTo("updated");
-		assertThat(incident.getDescription()).isEqualTo("description");
-		assertThat(incident.getMapCoordinates()).isEqualTo("mapCoordinates");
-		assertThat(incident.getFeedback()).isEqualTo("feedback");
-		assertThat(incident.getStatus()).isEqualTo(Status.SPARAT);
-		assertThat(incident.getCategory()).isEqualTo(Category.OVRIGT);
+	void testBean() {
+		MatcherAssert.assertThat(IncidentEntity.class, allOf(
+			hasValidBeanConstructor(),
+			hasValidGettersAndSetters()));
 	}
 
+	@Test
+	void preUpdateTest() {
+		var incident = buildIncidentEntity(Category.VATTENMATARE);
+		incident.preUpdate();
+
+		assertThat(incident.getUpdated()).isNotNull();
+		assertThat(incident.getUpdated()).isCloseTo(now(systemDefault()), within(2, SECONDS));
+	}
+	
 }

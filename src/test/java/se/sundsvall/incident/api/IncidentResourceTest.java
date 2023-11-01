@@ -81,7 +81,7 @@ class IncidentResourceTest {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.getBody()).isNotNull();
 		assertThat(response.getBody()).usingRecursiveComparison()
-			.ignoringFields("status")
+			.ignoringFields("status", "created", "updated")
 			.isEqualTo(incidentDto);
 		assertThat(response.getBody().getStatus()).isEqualTo(incidentDto.getStatusText());
 

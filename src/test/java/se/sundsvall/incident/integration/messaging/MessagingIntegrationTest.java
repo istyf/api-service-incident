@@ -27,7 +27,7 @@ class MessagingIntegrationTest {
 
 	@InjectMocks
 	private MessagingIntegration messagingIntegration;
-
+	
 	@Test
 	void sendEmail() {
 		var incidentDto = buildIncidentDto();

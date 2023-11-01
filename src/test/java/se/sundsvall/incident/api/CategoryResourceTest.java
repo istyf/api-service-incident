@@ -30,21 +30,12 @@ class CategoryResourceTest {
 	private CategoryResource categoryResource;
 
 	@Test
-	void getAllCategoriesTest_shouldReturn200_whenFound() {
+	void getAllCategoriesTest_shouldReturn200() {
 		when(mockCategoryService.fetchAllCategories()).thenReturn(List.of(createCategoryDTO()));
 
 		var response = categoryResource.getAllCategories();
 
 		assertThat(response.getStatusCode()).isEqualTo(OK);
-	}
-
-	@Test
-	void getAllCategoriesTest_shouldReturn204_whenEmpty() {
-		when(mockCategoryService.fetchAllCategories()).thenReturn(List.of());
-
-		var response = categoryResource.getAllCategories();
-
-		assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT);
 	}
 
 	@Test

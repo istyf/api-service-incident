@@ -1,7 +1,9 @@
 package se.sundsvall.incident.service;
 
+import static java.util.Optional.ofNullable;
 import static org.zalando.problem.Status.NOT_FOUND;
-import static se.sundsvall.incident.service.utils.PatchUtil.setPropertyIfNonNull;
+import static se.sundsvall.incident.service.mapper.Mapper.toCategoryDto;
+import static se.sundsvall.incident.service.mapper.Mapper.toCategoryEntity;
 
 import java.util.List;
 
@@ -20,28 +22,26 @@ public class CategoryService {
 
 	private static final String CATEGORY_NOT_FOUND = "Category with id: %s not found";
 	private final CategoryRepository categoryRepository;
-	private final Mapper mapper;
 
-	public CategoryService(final CategoryRepository categoryRepository, final Mapper mapper) {
+	public CategoryService(final CategoryRepository categoryRepository) {
 		this.categoryRepository = categoryRepository;
-		this.mapper = mapper;
 	}
 
 	public CategoryDTO fetchCategoryById(final Integer id) {
 		var categoryEntity = categoryRepository.findById(id)
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, CATEGORY_NOT_FOUND.formatted(id)));
-		return mapper.toCategoryDto(categoryEntity);
+		return toCategoryDto(categoryEntity);
 	}
 
 	public List<CategoryDTO> fetchAllCategories() {
 		return categoryRepository.findAll().stream()
-			.map(mapper::toCategoryDto)
+			.map(Mapper::toCategoryDto)
 			.toList();
 	}
 
 	public CategoryDTO createCategory(final CategoryPost categoryPost) {
-		var entity = categoryRepository.save(mapper.toCategoryEntity(categoryPost));
-		return mapper.toCategoryDto(entity);
+		var entity = categoryRepository.save(toCategoryEntity(categoryPost));
+		return toCategoryDto(entity);
 	}
 
 	public void deleteCategoryById(final Integer id) {
@@ -55,13 +55,13 @@ public class CategoryService {
 		var categoryEntity = categoryRepository.findById(id)
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, CATEGORY_NOT_FOUND.formatted(id)));
 		var patchedEntity = categoryRepository.save(patchEntity(categoryEntity, patch));
-		return mapper.toCategoryDto(patchedEntity);
+		return toCategoryDto(patchedEntity);
 	}
 
 	CategoryEntity patchEntity(final CategoryEntity entity, final CategoryPatch patch) {
-		setPropertyIfNonNull(entity::setTitle, patch.title());
-		setPropertyIfNonNull(entity::setLabel, patch.label());
-		setPropertyIfNonNull(entity::setForwardTo, patch.forwardTo());
+		ofNullable(patch.title()).ifPresent(entity::setTitle);
+		ofNullable(patch.label()).ifPresent(entity::setLabel);
+		ofNullable(patch.forwardTo()).ifPresent(entity::setForwardTo);
 		return entity;
 	}
 

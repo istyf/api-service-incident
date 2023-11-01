@@ -2,9 +2,9 @@ package se.sundsvall.incident.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
@@ -14,12 +14,8 @@ import se.sundsvall.incident.dto.Status;
 @ExtendWith(MockitoExtension.class)
 class ValidListResourceTest {
 
+	@InjectMocks
 	private ValidListResource validListResource;
-
-	@BeforeEach
-	void setUp() {
-		this.validListResource = new ValidListResource();
-	}
 
 	@Test
 	void getValidStatuses() {
@@ -31,7 +27,7 @@ class ValidListResourceTest {
 		assertThat(response.getBody()).hasSize(Status.values().length);
 		response.getBody()
 			.forEach(validStatusResponse -> assertThat(validStatusResponse.getStatus())
-				.isEqualTo(Status.forValue(validStatusResponse.getSTATUS_ID())
+				.isEqualTo(Status.forValue(validStatusResponse.getStatusId())
 					.getLabel()));
 	}
 
@@ -45,7 +41,7 @@ class ValidListResourceTest {
 		assertThat(response.getBody()).hasSize(Category.values().length);
 		response.getBody()
 			.forEach(validCategoryResponse -> assertThat(validCategoryResponse.getCategory())
-				.isEqualTo(Category.forValue(validCategoryResponse.getCATEGORY_ID())
+				.isEqualTo(Category.forValue(validCategoryResponse.getCategoryId())
 					.getLabel()));
 	}
 

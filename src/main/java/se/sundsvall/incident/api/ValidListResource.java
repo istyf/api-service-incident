@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
 
 import se.sundsvall.incident.api.model.ValidCategoryResponse;
-import se.sundsvall.incident.api.model.ValidOepCategoryReponse;
+import se.sundsvall.incident.api.model.ValidOepCategoryResponse;
 import se.sundsvall.incident.api.model.ValidStatusResponse;
 import se.sundsvall.incident.dto.Category;
 import se.sundsvall.incident.dto.Status;
@@ -44,7 +44,7 @@ public class ValidListResource {
 		return ResponseEntity.ok(Arrays.stream(Status.values())
 			.map(dto -> ValidStatusResponse.builder()
 				.withStatus(dto.getLabel())
-				.withSTATUS_ID(dto.getValue()).build())
+				.withStatusId(dto.getValue()).build())
 			.toList());
 	}
 
@@ -66,7 +66,7 @@ public class ValidListResource {
 		return ResponseEntity.ok(Arrays.stream(Category.values())
 			.map(cat -> ValidCategoryResponse.builder()
 				.withCategory(cat.getLabel())
-				.withCATEGORY_ID(cat.getValue())
+				.withCategoryId(cat.getValue())
 				.build())
 			.toList());
 	}
@@ -75,7 +75,7 @@ public class ValidListResource {
 	@ApiResponse(
 		responseCode = "200",
 		description = "Successful Operation",
-		content = @Content(schema = @Schema(implementation = ValidOepCategoryReponse.class)))
+		content = @Content(schema = @Schema(implementation = ValidOepCategoryResponse.class)))
 	@ApiResponse(
 		responseCode = "400",
 		description = "Bad Request",
@@ -85,9 +85,9 @@ public class ValidListResource {
 		description = "Internal Server Error",
 		content = @Content(schema = @Schema(implementation = Problem.class)))
 	@GetMapping("validcategories/oep")
-	public ResponseEntity<List<ValidOepCategoryReponse>> getValidOepCategories() {
+	public ResponseEntity<List<ValidOepCategoryResponse>> getValidOepCategories() {
 		return ResponseEntity.ok(Arrays.stream(Category.values())
-			.map(cat -> ValidOepCategoryReponse.builder()
+			.map(cat -> ValidOepCategoryResponse.builder()
 				.withKey(String.valueOf(cat.getValue()))
 				.withValue(cat.getLabel())
 				.build())

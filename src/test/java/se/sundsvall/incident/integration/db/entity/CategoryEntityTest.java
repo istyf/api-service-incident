@@ -1,7 +1,9 @@
 package se.sundsvall.incident.integration.db.entity;
 
+import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanConstructor;
+import static com.google.code.beanmatchers.BeanMatchers.hasValidGettersAndSetters;
 import static org.assertj.core.api.Assertions.assertThat;
-import static se.sundsvall.incident.TestDataFactory.createCategoryEntity;
+import static org.hamcrest.CoreMatchers.allOf;
 
 import java.lang.reflect.Field;
 
@@ -10,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 
 class CategoryEntityTest {
@@ -24,7 +27,7 @@ class CategoryEntityTest {
 		final GeneratedValue generatedValue = id.getDeclaredAnnotation(GeneratedValue.class);
 
 		assertThat(column.name()).isEqualTo("category_id");
-		assertThat(generatedValue.strategy()).isEqualTo(GenerationType.AUTO);
+		assertThat(generatedValue.strategy()).isEqualTo(GenerationType.IDENTITY);
 	}
 
 	@Test
@@ -58,31 +61,10 @@ class CategoryEntityTest {
 	}
 
 	@Test
-	void getterTest() {
-		var entity = createCategoryEntity();
-		var categoryId = entity.getCategoryId();
-		var label = entity.getLabel();
-		var title = entity.getTitle();
-		var forwardTo = entity.getForwardTo();
-
-		assertThat(categoryId).isEqualTo(entity.getCategoryId());
-		assertThat(label).isEqualTo(entity.getLabel());
-		assertThat(title).isEqualTo(entity.getTitle());
-		assertThat(forwardTo).isEqualTo(entity.getForwardTo());
-	}
-
-	@Test
-	void setterTest() {
-		var entity = createCategoryEntity();
-		entity.setCategoryId(1337);
-		entity.setTitle("new title");
-		entity.setLabel("new label");
-		entity.setForwardTo("new email");
-
-		assertThat(entity.getCategoryId()).isEqualTo(1337);
-		assertThat(entity.getTitle()).isEqualTo("new title");
-		assertThat(entity.getLabel()).isEqualTo("new label");
-		assertThat(entity.getForwardTo()).isEqualTo("new email");
+	void testBean() {
+		MatcherAssert.assertThat(CategoryEntity.class, allOf(
+			hasValidBeanConstructor(),
+			hasValidGettersAndSetters()));
 	}
 
 }

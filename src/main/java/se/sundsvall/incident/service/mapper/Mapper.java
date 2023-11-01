@@ -3,8 +3,6 @@ package se.sundsvall.incident.service.mapper;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.stereotype.Component;
-
 import se.sundsvall.incident.api.model.AttachmentRequest;
 import se.sundsvall.incident.api.model.CategoryDTO;
 import se.sundsvall.incident.api.model.CategoryPost;
@@ -17,26 +15,35 @@ import se.sundsvall.incident.integration.db.entity.AttachmentEntity;
 import se.sundsvall.incident.integration.db.entity.CategoryEntity;
 import se.sundsvall.incident.integration.db.entity.IncidentEntity;
 
-@Component
-public class Mapper {
+public final class Mapper {
 
-	public IncidentEntity toEntity(IncidentSaveRequest request) {
-		var uuid = UUID.randomUUID().toString();
+	private Mapper() {
+		// Never instantiate
+	}
+
+	public static IncidentEntity toEntity(final IncidentSaveRequest request) {
+		if (request == null) {
+			return null;
+		}
+
 		return IncidentEntity.builder()
-			.withIncidentId(uuid)
+			.withIncidentId(UUID.randomUUID().toString())
 			.withExternalCaseId(request.getExternalCaseId())
-			.withPersonID(request.getPersonId())
+			.withPersonId(request.getPersonId())
 			.withPhoneNumber(request.getPhoneNumber())
 			.withEmail(request.getEmail())
 			.withContactMethod(request.getContactMethod())
 			.withCategory(Category.forValue(request.getCategory()))
 			.withDescription(request.getDescription())
-			.withMapCoordinates(request.getMapCoordinates())
+			.withCoordinates(request.getMapCoordinates())
 			.withStatus(Status.INSKICKAT)
 			.build();
 	}
 
-	public AttachmentEntity toEntity(AttachmentRequest request, String incidentId) {
+	public static AttachmentEntity toEntity(final AttachmentRequest request, final String incidentId) {
+		if (request == null) {
+			return null;
+		}
 		return AttachmentEntity.builder()
 			.withMimeType(request.getMimeType())
 			.withNote(request.getNote())
@@ -48,58 +55,70 @@ public class Mapper {
 			.build();
 	}
 
-	public IncidentDto toIncidentDto(IncidentEntity incidentEntity) {
+	public static IncidentDto toIncidentDto(final IncidentEntity entity) {
+		if (entity == null) {
+			return null;
+		}
+
 		return IncidentDto.builder()
-			.withIncidentId(incidentEntity.getIncidentId())
-			.withExternalCaseId(incidentEntity.getExternalCaseId())
-			.withPersonId(incidentEntity.getPersonID())
-			.withCreated(incidentEntity.getCreated())
-			.withUpdated(incidentEntity.getUpdated())
-			.withPhoneNumber(incidentEntity.getPhoneNumber())
-			.withEmail(incidentEntity.getEmail())
-			.withContactMethod(incidentEntity.getContactMethod())
-			.withCategory(incidentEntity.getCategory().getValue())
-			.withDescription(incidentEntity.getDescription())
-			.withMapCoordinates(incidentEntity.getMapCoordinates())
-			.withFeedback(incidentEntity.getFeedback())
-			.withStatusText(incidentEntity.getStatus().getLabel())
-			.withStatusId(incidentEntity.getStatus().getValue())
+			.withIncidentId(entity.getIncidentId())
+			.withExternalCaseId(entity.getExternalCaseId())
+			.withPersonId(entity.getPersonId())
+			.withCreated(entity.getCreated())
+			.withUpdated(entity.getUpdated())
+			.withPhoneNumber(entity.getPhoneNumber())
+			.withEmail(entity.getEmail())
+			.withContactMethod(entity.getContactMethod())
+			.withCategory(entity.getCategory().getValue())
+			.withDescription(entity.getDescription())
+			.withMapCoordinates(entity.getCoordinates())
+			.withFeedback(entity.getFeedback())
+			.withStatusText(entity.getStatus().getLabel())
+			.withStatusId(entity.getStatus().getValue())
 			.build();
 	}
 
-	public IncidentDto toIncidentDto(IncidentEntity incidentEntity, List<AttachmentEntity> attachmentList) {
+	public static IncidentDto toIncidentDto(final IncidentEntity entity, final List<AttachmentEntity> attachmentList) {
+		if (entity == null) {
+			return null;
+		}
+
 		return IncidentDto.builder()
-			.withIncidentId(incidentEntity.getIncidentId())
-			.withExternalCaseId(incidentEntity.getExternalCaseId())
-			.withPersonId(incidentEntity.getPersonID())
-			.withCreated(incidentEntity.getCreated())
-			.withUpdated(incidentEntity.getUpdated())
-			.withPhoneNumber(incidentEntity.getPhoneNumber())
-			.withEmail(incidentEntity.getEmail())
-			.withContactMethod(incidentEntity.getContactMethod())
-			.withCategory(incidentEntity.getCategory().getValue())
-			.withDescription(incidentEntity.getDescription())
-			.withMapCoordinates(incidentEntity.getMapCoordinates())
-			.withFeedback(incidentEntity.getFeedback())
+			.withIncidentId(entity.getIncidentId())
+			.withExternalCaseId(entity.getExternalCaseId())
+			.withPersonId(entity.getPersonId())
+			.withCreated(entity.getCreated())
+			.withUpdated(entity.getUpdated())
+			.withPhoneNumber(entity.getPhoneNumber())
+			.withEmail(entity.getEmail())
+			.withContactMethod(entity.getContactMethod())
+			.withCategory(entity.getCategory().getValue())
+			.withDescription(entity.getDescription())
+			.withMapCoordinates(entity.getCoordinates())
+			.withFeedback(entity.getFeedback())
 			.withAttachments(attachmentList.stream()
-				.map(this::toAttachmentDto)
+				.map(Mapper::toAttachmentDto)
 				.toList())
 			.build();
 	}
 
-	public AttachmentDto toAttachmentDto(AttachmentEntity attachmentEntity) {
+	public static AttachmentDto toAttachmentDto(final AttachmentEntity entity) {
+		if (entity == null) {
+			return null;
+		}
+
 		return AttachmentDto.builder()
-			.withName(attachmentEntity.getName())
-			.withMimeType(attachmentEntity.getMimeType())
-			.withNote(attachmentEntity.getNote())
-			.withExtension(attachmentEntity.getExtension())
-			.withFile(attachmentEntity.getFile())
-			.withCategory(attachmentEntity.getCategory())
-			.withIncidentId(attachmentEntity.getIncidentId())
+			.withName(entity.getName())
+			.withMimeType(entity.getMimeType())
+			.withNote(entity.getNote())
+			.withExtension(entity.getExtension())
+			.withFile(entity.getFile())
+			.withCategory(entity.getCategory())
+			.withIncidentId(entity.getIncidentId())
 			.build();
 	}
 
-	public CategoryDTO toCategoryDto(final CategoryEntity entity) {
+	public static CategoryDTO toCategoryDto(final CategoryEntity entity) {
 		if (entity == null) {
 			return null;
 		}
@@ -112,7 +131,7 @@ public class Mapper {
 			.build();
 	}
 
-	public CategoryEntity toCategoryEntity(final CategoryPost categoryPost) {
+	public static CategoryEntity toCategoryEntity(final CategoryPost categoryPost) {
 		if (categoryPost == null) {
 			return null;
 		}
@@ -123,4 +142,5 @@ public class Mapper {
 			.withForwardTo(categoryPost.forwardTo())
 			.build();
 	}
+
 }
