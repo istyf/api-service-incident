@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.incident.TestDataFactory.createCategoryEntity;
@@ -17,23 +16,17 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.problem.Problem;
 
 import se.sundsvall.incident.api.model.CategoryDTO;
-import se.sundsvall.incident.api.model.CategoryPost;
 import se.sundsvall.incident.integration.db.CategoryRepository;
-import se.sundsvall.incident.integration.db.entity.CategoryEntity;
-import se.sundsvall.incident.service.mapper.Mapper;
 
 @ExtendWith(MockitoExtension.class)
 class CategoryServiceTest {
 
-	@Mock(answer = Answers.CALLS_REAL_METHODS)
-	private Mapper mockMapper;
 
 	@Mock
 	private CategoryRepository mockCategoryRepository;
@@ -47,12 +40,11 @@ class CategoryServiceTest {
 			.thenReturn(Optional.ofNullable(createCategoryEntity()));
 
 		var result = categoryService.fetchCategoryById(5);
-		
+
 		assertThat(result).isInstanceOf(CategoryDTO.class).isNotNull();
 
 		verify(mockCategoryRepository, times(1)).findById(any());
-		verify(mockMapper, times(1)).toCategoryDto(any());
-		verifyNoMoreInteractions(mockCategoryRepository, mockMapper);
+		verifyNoMoreInteractions(mockCategoryRepository);
 	}
 
 	@Test
@@ -67,7 +59,6 @@ class CategoryServiceTest {
 
 		verify(mockCategoryRepository, times(1)).findById(any());
 		verifyNoMoreInteractions(mockCategoryRepository);
-		verifyNoInteractions(mockMapper);
 	}
 
 	@Test
@@ -79,8 +70,7 @@ class CategoryServiceTest {
 		assertThat(categories).isNotNull().isNotEmpty().hasSize(2);
 
 		verify(mockCategoryRepository, times(1)).findAll();
-		verify(mockMapper, times(2)).toCategoryDto(any(CategoryEntity.class));
-		verifyNoMoreInteractions(mockCategoryRepository, mockMapper);
+		verifyNoMoreInteractions(mockCategoryRepository);
 	}
 
 	@Test
@@ -93,7 +83,6 @@ class CategoryServiceTest {
 
 		verify(mockCategoryRepository, times(1)).findAll();
 		verifyNoMoreInteractions(mockCategoryRepository);
-		verifyNoInteractions(mockMapper);
 	}
 
 	@Test
@@ -108,9 +97,7 @@ class CategoryServiceTest {
 		assertThat(category.getTitle()).isEqualTo(entity.getTitle());
 
 		verify(mockCategoryRepository, times(1)).save(any());
-		verify(mockMapper, times(1)).toCategoryDto(any(CategoryEntity.class));
-		verify(mockMapper, times(1)).toCategoryEntity(any(CategoryPost.class));
-		verifyNoMoreInteractions(mockCategoryRepository, mockMapper);
+		verifyNoMoreInteractions(mockCategoryRepository);
 	}
 
 	@Test
@@ -121,7 +108,6 @@ class CategoryServiceTest {
 
 		verify(mockCategoryRepository, times(1)).existsById(any());
 		verify(mockCategoryRepository, times(1)).deleteById(any());
-		verifyNoInteractions(mockMapper);
 	}
 
 	@Test
@@ -135,7 +121,6 @@ class CategoryServiceTest {
 
 		verify(mockCategoryRepository, times(1)).existsById(any());
 		verifyNoMoreInteractions(mockCategoryRepository);
-		verifyNoInteractions(mockMapper);
 	}
 
 	@Test
@@ -152,8 +137,7 @@ class CategoryServiceTest {
 		assertThat(patchedEntity.getForwardTo()).isEqualTo(entity.getForwardTo());
 
 		verify(mockCategoryRepository, times(1)).findById(any());
-		verify(mockMapper, times(1)).toCategoryDto(any(CategoryEntity.class));
-		verifyNoMoreInteractions(mockCategoryRepository, mockMapper);
+		verifyNoMoreInteractions(mockCategoryRepository);
 	}
 
 	@Test
@@ -166,7 +150,6 @@ class CategoryServiceTest {
 			.isInstanceOf(Problem.class);
 
 		verify(mockCategoryRepository, times(1)).findById(any());
-		verifyNoInteractions(mockMapper);
 	}
 
 	@Test
@@ -187,6 +170,4 @@ class CategoryServiceTest {
 			assertThat(email).isNotEqualTo(patch.forwardTo());
 		});
 	}
-
-
 }

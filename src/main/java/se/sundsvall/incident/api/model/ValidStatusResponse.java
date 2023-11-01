@@ -10,7 +10,7 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 public class ValidStatusResponse {
 
-	private Integer STATUS_ID;
+	private Integer statusId;
 	private String status;
 
 }

@@ -1,5 +1,7 @@
 package se.sundsvall.incident.api;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -25,7 +27,6 @@ import se.sundsvall.incident.api.model.CategoryPost;
 import se.sundsvall.incident.service.CategoryService;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -37,9 +38,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Category resources")
 @ApiResponses(value = {
 	@ApiResponse(responseCode = "400", description = "Bad Request",
-		content = @Content(schema = @Schema(implementation = Problem.class))),
+		content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class))),
 	@ApiResponse(responseCode = "500", description = "Internal Server Error",
-		content = @Content(schema = @Schema(implementation = Problem.class)))
+		content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 })
 public class CategoryResource {
 
@@ -51,27 +52,21 @@ public class CategoryResource {
 
 	@Operation(summary = "Fetch all categories",
 		responses = {
-			@ApiResponse(responseCode = "200", description = "All categories returned",
-				content = @Content(array = @ArraySchema(schema = @Schema(implementation = CategoryDTO.class)))),
-			@ApiResponse(responseCode = "204", description = "No content")
+			@ApiResponse(responseCode = "200", description = "All categories returned", useReturnTypeSchema = true),
 		})
-	@GetMapping
+	@GetMapping(produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
 	public ResponseEntity<List<CategoryDTO>> getAllCategories() {
-		var categories = categoryService.fetchAllCategories();
-		if (categories.isEmpty()) {
-			return noContent().build();
-		}
-		return ok(categories);
+		return ok(categoryService.fetchAllCategories());
 	}
 
 	@Operation(summary = "Fetch category by ID",
 		responses = {
-			@ApiResponse(responseCode = "200", description = "Category returned",
-				content = @Content(schema = @Schema(implementation = CategoryDTO.class))),
+			@ApiResponse(responseCode = "200", description = "Category returned", useReturnTypeSchema = true,
+				content = @Content(mediaType = APPLICATION_JSON_VALUE)),
 			@ApiResponse(responseCode = "404", description = "Not found",
-				content = @Content(schema = @Schema(implementation = Problem.class)))
+				content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 		})
-	@GetMapping("/{id}")
+	@GetMapping(path = "/{id}", produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
 	public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable("id") final Integer id) {
 		var category = categoryService.fetchCategoryById(id);
 		return ok(category);
@@ -81,7 +76,7 @@ public class CategoryResource {
 		responses = {
 			@ApiResponse(responseCode = "201", description = "Category created"),
 		})
-	@PostMapping
+	@PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_PROBLEM_JSON_VALUE)
 	public ResponseEntity<Void> postCategory(
 		@RequestBody @Valid final CategoryPost categoryPost) {
 		var createdCategory = categoryService.createCategory(categoryPost);
@@ -94,12 +89,12 @@ public class CategoryResource {
 
 	@Operation(summary = "Update a category",
 		responses = {
-			@ApiResponse(responseCode = "200", description = "Category was updated",
-				content = @Content(schema = @Schema(implementation = CategoryDTO.class))),
+			@ApiResponse(responseCode = "200", description = "Category was updated", useReturnTypeSchema = true,
+				content = @Content(mediaType = APPLICATION_JSON_VALUE)),
 			@ApiResponse(responseCode = "404", description = "Not found",
-				content = @Content(schema = @Schema(implementation = Problem.class)))
+				content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 		})
-	@PatchMapping("/{id}")
+	@PatchMapping(path = "/{id}", produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE}, consumes = APPLICATION_JSON_VALUE)
 	public ResponseEntity<CategoryDTO> patchCategory(
 		@PathVariable("id") final Integer id,
 		@RequestBody @Valid final CategoryPatch patch) {
@@ -110,13 +105,12 @@ public class CategoryResource {
 		responses = {
 			@ApiResponse(responseCode = "204", description = "Category deleted"),
 			@ApiResponse(responseCode = "404", description = "Not found",
-				content = @Content(schema = @Schema(implementation = Problem.class)))
+				content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 		})
-	@DeleteMapping("/{id}")
+	@DeleteMapping(path = "/{id}", produces = APPLICATION_PROBLEM_JSON_VALUE)
 	public ResponseEntity<Void> deleteCategoryById(@PathVariable("id") final Integer id) {
 		categoryService.deleteCategoryById(id);
 		return noContent().build();
 	}
-
 
 }

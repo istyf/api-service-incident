@@ -1,8 +1,8 @@
 package se.sundsvall.incident.service;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+import static se.sundsvall.incident.service.mapper.Mapper.toEntity;
+import static se.sundsvall.incident.service.mapper.Mapper.toIncidentDto;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -30,40 +30,35 @@ public class IncidentService {
 	private final MessagingIntegration messagingIntegration;
 	private final IncidentRepository incidentRepository;
 	private final AttachmentRepository attachmentRepository;
-	private final Mapper mapper;
 
 	public IncidentService(final IncidentRepository incidentRepository,
 		final LifeBuoyIntegration lifeBuoyIntegration,
 		final MessagingIntegration messagingIntegration,
-		final Mapper mapper,
 		final AttachmentRepository attachmentRepository) {
 		this.incidentRepository = incidentRepository;
 		this.lifeBuoyIntegration = lifeBuoyIntegration;
 		this.messagingIntegration = messagingIntegration;
-		this.mapper = mapper;
 		this.attachmentRepository = attachmentRepository;
 	}
 
 	public Optional<IncidentDto> getOepIncidentStatus(final String externalCaseId) {
-		return incidentRepository.findIncidentEntityByExternalCaseId(externalCaseId).map(mapper::toIncidentDto);
+		return incidentRepository.findIncidentEntityByExternalCaseId(externalCaseId).map(Mapper::toIncidentDto);
 	}
 
 	public IncidentDto sendIncident(final IncidentSaveRequest request) {
-		final var entity = mapper.toEntity(request);
+		final var entity = toEntity(request);
 
 		final List<AttachmentEntity> attachmentList = Optional.ofNullable(request.getAttachments()).orElse(List.of())
 			.stream()
-			.map(e -> mapper.toEntity(e, entity.getIncidentId()))
+			.map(e -> toEntity(e, entity.getIncidentId()))
 			.toList();
 
 		try {
 			switch (entity.getCategory()) {
 				case LIVBAT, LIVBOJ ->
-					entity.setExternalCaseId(lifeBuoyIntegration.sendLifeBuoy(mapper.toIncidentDto(entity)));
-				case VATTENMATARE ->
-					messagingIntegration.sendMSVAEmail(mapper.toIncidentDto(entity));
-				default ->
-					messagingIntegration.sendEmail(mapper.toIncidentDto(entity, attachmentList));
+					entity.setExternalCaseId(lifeBuoyIntegration.sendLifeBuoy(toIncidentDto(entity)));
+				case VATTENMATARE -> messagingIntegration.sendMSVAEmail(toIncidentDto(entity));
+				default -> messagingIntegration.sendEmail(toIncidentDto(entity, attachmentList));
 			}
 		} catch (final Exception e) {
 			entity.setStatus(Status.ERROR);
@@ -81,14 +76,13 @@ public class IncidentService {
 
 	public Optional<IncidentDto> getIncident(final String incidentId) {
 		return incidentRepository.findById(incidentId)
-			.map((IncidentEntity incidentEntity) -> mapper.toIncidentDto(incidentEntity, attachmentRepository.findAllByIncidentId(incidentId)));
+			.map((IncidentEntity incidentEntity) -> toIncidentDto(incidentEntity, attachmentRepository.findAllByIncidentId(incidentId)));
 	}
 
 	public void updateIncidentStatus(final String incidentId, final Integer statusId) {
 		incidentRepository.findById(incidentId)
 			.ifPresent(entity -> {
 				entity.setStatus(Status.forValue(statusId));
-				entity.setUpdated(LocalDateTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 				incidentRepository.save(entity);
 			});
 	}
@@ -96,7 +90,7 @@ public class IncidentService {
 	public List<IncidentDto> getIncidents(final int offset, final int limit) {
 		return incidentRepository.findAll(PageRequest.of(offset, limit))
 			.stream()
-			.map((IncidentEntity incidentEntity) -> mapper.toIncidentDto(incidentEntity, attachmentRepository.findAllByIncidentId(incidentEntity.getIncidentId())))
+			.map((IncidentEntity incidentEntity) -> toIncidentDto(incidentEntity, attachmentRepository.findAllByIncidentId(incidentEntity.getIncidentId())))
 			.toList();
 	}
 
@@ -104,7 +98,6 @@ public class IncidentService {
 		incidentRepository.findById(incidentId)
 			.ifPresent(entity -> {
 				entity.setFeedback(feedback);
-				entity.setUpdated(LocalDateTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 				incidentRepository.save(entity);
 			});
 	}
