@@ -14,19 +14,18 @@ import static se.sundsvall.incident.TestDataFactory.buildIncidentEntity;
 import static se.sundsvall.incident.TestDataFactory.buildIncidentSaveRequest;
 import static se.sundsvall.incident.TestDataFactory.buildListIncidentEntities;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import se.sundsvall.incident.api.model.IncidentSaveRequest;
 import se.sundsvall.incident.dto.Category;
@@ -37,7 +36,6 @@ import se.sundsvall.incident.integration.db.IncidentRepository;
 import se.sundsvall.incident.integration.db.entity.IncidentEntity;
 import se.sundsvall.incident.integration.lifebuoy.LifeBuoyIntegration;
 import se.sundsvall.incident.integration.messaging.MessagingIntegration;
-import se.sundsvall.incident.service.mapper.Mapper;
 
 @ExtendWith(MockitoExtension.class)
 class IncidentServiceTest {
@@ -57,15 +55,12 @@ class IncidentServiceTest {
 	@InjectMocks
 	private IncidentService incidentService;
 
-	@Mock(answer = Answers.CALLS_REAL_METHODS)
-	private Mapper mockMapper;
-
 	@Test
-	void getOepIncidentstatus() {
+	void getOepIncidentStatus() {
 		final var incidentEntity = buildIncidentEntity(Category.VATTENMATARE);
 		when(incidentRepository.findIncidentEntityByExternalCaseId(anyString())).thenReturn(Optional.of(incidentEntity));
 
-		final var response = incidentService.getOepIncidentstatus("123").orElse(null);
+		final var response = incidentService.getOepIncidentStatus("123").orElse(null);
 
 		assertThat(response).isNotNull();
 		assertThat(response.getIncidentId()).isEqualTo(incidentEntity.getIncidentId());
@@ -182,12 +177,12 @@ class IncidentServiceTest {
 		final var incidentEntity = IncidentEntity.builder()
 			.withIncidentId(INCIDENTID)
 			.withExternalCaseId("12345")
-			.withPersonID("diwise")
-			.withCreated("2021-06-17T23:04:11.000Z")
-			.withUpdated("2022-02-13T09:13:45.000Z")
+			.withPersonId("diwise")
+			.withCreated(LocalDateTime.now())
+			.withUpdated(LocalDateTime.now())
 			.withCategory(Category.VATTENMATARE)
 			.withDescription("XXX - Temporärt Fel Läckage")
-			.withMapCoordinates("62.388178,17.315090")
+			.withCoordinates("62.388178,17.315090")
 			.withStatus(Status.INSKICKAT)
 			.build();
 

@@ -2,6 +2,8 @@ package se.sundsvall.incident.api;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -14,12 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import se.sundsvall.incident.api.model.AttachmentResponse;
 import se.sundsvall.incident.api.model.IncidentListResponse;
 import se.sundsvall.incident.api.model.IncidentOepResponse;
@@ -27,6 +23,12 @@ import se.sundsvall.incident.api.model.IncidentResponse;
 import se.sundsvall.incident.api.model.IncidentSaveRequest;
 import se.sundsvall.incident.api.model.IncidentSaveResponse;
 import se.sundsvall.incident.service.IncidentService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "Incident resources")
 @RestController
@@ -58,7 +60,7 @@ public class IncidentResource {
 		content = @Content(schema = @Schema(implementation = Problem.class)))
 	@GetMapping("/internal/oep/status/{externalCaseId}")
 	ResponseEntity<IncidentOepResponse> getStatusForOeP(@PathVariable(name = "externalCaseId") String externalCaseId) {
-		return incidentService.getOepIncidentstatus(externalCaseId)
+		return incidentService.getOepIncidentStatus(externalCaseId)
 			.map(oepIncidentDto -> IncidentOepResponse.builder()
 				.withIncidentId(oepIncidentDto.getIncidentId())
 				.withStatusId(oepIncidentDto.getStatusId())
@@ -115,8 +117,8 @@ public class IncidentResource {
 				.withIncidentId(incidentId)
 				.withExternalCaseId(incidentDto.getExternalCaseId())
 				.withPersonId(incidentDto.getPersonId())
-				.withCreated(incidentDto.getCreated())
-				.withUpdated(incidentDto.getUpdated())
+				.withCreated(String.valueOf(incidentDto.getCreated()))
+				.withUpdated(String.valueOf(incidentDto.getUpdated()))
 				.withPhoneNumber(incidentDto.getPhoneNumber())
 				.withEmail(incidentDto.getEmail())
 				.withContactMethod(incidentDto.getContactMethod())

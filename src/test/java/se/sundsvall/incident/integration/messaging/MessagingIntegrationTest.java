@@ -1,12 +1,5 @@
 package se.sundsvall.incident.integration.messaging;
 
-import generated.se.sundsvall.messaging.EmailRequest;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -15,40 +8,43 @@ import static se.sundsvall.incident.TestDataFactory.buildEmailRequest;
 import static se.sundsvall.incident.TestDataFactory.buildIncidentDto;
 import static se.sundsvall.incident.TestDataFactory.buildMSVAEmailRequest;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import generated.se.sundsvall.messaging.EmailRequest;
+
 @ExtendWith(MockitoExtension.class)
 class MessagingIntegrationTest {
 
-    MessagingIntegration messagingIntegration;
+	@Mock
+	private EmailMapper emailMapper;
 
-    @Mock
-    EmailMapper emailMapper;
+	@Mock
+	private MessagingClient messagingClient;
 
-    @Mock
-    MessagingClient messagingClient;
+	@InjectMocks
+	private MessagingIntegration messagingIntegration;
+	
+	@Test
+	void sendEmail() {
+		var incidentDto = buildIncidentDto();
+		when(emailMapper.toEmailDto(any())).thenReturn(buildEmailRequest());
+		messagingIntegration.sendEmail(incidentDto);
 
-    @BeforeEach
-    void setUp() {
+		verify(messagingClient, times(1)).sendEmail(any(EmailRequest.class));
+		verify(emailMapper, times(1)).toEmailDto(any());
+	}
 
-        messagingIntegration = new MessagingIntegration(emailMapper, messagingClient);
-    }
+	@Test
+	void sendMSVAEmail() {
+		var incidentDto = buildIncidentDto();
+		when(emailMapper.toMSVAEmailDto(any())).thenReturn(buildMSVAEmailRequest());
+		messagingIntegration.sendMSVAEmail(incidentDto);
 
-    @Test
-    void sendEmail() {
-        var incidentDto = buildIncidentDto();
-        when(emailMapper.toEmailDto(any())).thenReturn(buildEmailRequest());
-        messagingIntegration.sendEmail(incidentDto);
-
-        verify(messagingClient, times(1)).sendEmail(any(EmailRequest.class));
-        verify(emailMapper, times(1)).toEmailDto(any());
-    }
-
-    @Test
-    void sendMSVAEmail() {
-        var incidentDto = buildIncidentDto();
-        when(emailMapper.toMSVAEmailDto(any())).thenReturn(buildMSVAEmailRequest());
-        messagingIntegration.sendMSVAEmail(incidentDto);
-
-        verify(messagingClient, times(1)).sendEmail(any(EmailRequest.class));
-        verify(emailMapper, times(1)).toMSVAEmailDto(any());
-    }
+		verify(messagingClient, times(1)).sendEmail(any(EmailRequest.class));
+		verify(emailMapper, times(1)).toMSVAEmailDto(any());
+	}
 }

@@ -8,11 +8,9 @@ import lombok.Getter;
 @Getter
 @Builder(setterPrefix = "with")
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-public class IncidentOepResponse {
+public class ValidOepCategoryResponse {
 
-	private String incidentId;
-	private String externalCaseId;
-	private Integer statusId;
-	private String statusText;
+	private String key;
+	private String value;
 
 }

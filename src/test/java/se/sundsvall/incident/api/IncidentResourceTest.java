@@ -16,9 +16,9 @@ import static se.sundsvall.incident.TestDataFactory.buildListOfIncidentDto;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
@@ -31,20 +31,16 @@ import se.sundsvall.incident.service.IncidentService;
 class IncidentResourceTest {
 
 	@Mock
-	IncidentService mockIncidentService;
+	private IncidentService mockIncidentService;
+
+	@InjectMocks
 	private IncidentResource incidentResource;
-
-	@BeforeEach
-	void setUp() {
-		incidentResource = new IncidentResource(mockIncidentService);
-
-	}
 
 	@Test
 	void getStatusForOeP() {
 
 		final var incidentDto = buildIncidentDto();
-		when(mockIncidentService.getOepIncidentstatus(anyString())).thenReturn(Optional.of(incidentDto));
+		when(mockIncidentService.getOepIncidentStatus(anyString())).thenReturn(Optional.of(incidentDto));
 		final var response = incidentResource.getStatusForOeP(INCIDENTID);
 		assertThat(response).isNotNull();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -54,7 +50,7 @@ class IncidentResourceTest {
 		assertThat(response.getBody().getStatusId()).isEqualTo(incidentDto.getStatusId());
 		assertThat(response.getBody().getExternalCaseId()).isEqualTo(incidentDto.getExternalCaseId());
 
-		verify(mockIncidentService, times(1)).getOepIncidentstatus(anyString());
+		verify(mockIncidentService, times(1)).getOepIncidentStatus(anyString());
 	}
 
 	@Test
@@ -85,7 +81,7 @@ class IncidentResourceTest {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.getBody()).isNotNull();
 		assertThat(response.getBody()).usingRecursiveComparison()
-			.ignoringFields("status")
+			.ignoringFields("status", "created", "updated")
 			.isEqualTo(incidentDto);
 		assertThat(response.getBody().getStatus()).isEqualTo(incidentDto.getStatusText());
 

@@ -1,72 +1,90 @@
 package se.sundsvall.incident.integration.db.entity;
 
-import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+
+import se.sundsvall.incident.dto.Category;
+import se.sundsvall.incident.dto.Status;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import se.sundsvall.incident.dto.Category;
-import se.sundsvall.incident.dto.Status;
 
 @Entity
-@Table(name = "Errands")
+@Table(name = "incident")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @Builder(setterPrefix = "with")
 @Getter
 @Setter
-public class IncidentEntity implements Serializable {
-
-	private static final long serialVersionUID = -8817006765529811100L;
+public class IncidentEntity {
 
 	@Id
-	@Column(name = "IncidentId")
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "incident_id")
 	private String incidentId;
 
-	@Column(name = "externalCaseId")
+	@Column(name = "external_case_id")
 	private String externalCaseId;
 
-	@Column(name = "PersonId")
-	private String personID;
+	@Column(name = "person_id")
+	private String personId;
 
-	@Column(name = "Created")
-	private String created;
-
-	@Column(name = "PhoneNumber")
+	@Column(name = "phone_number")
 	private String phoneNumber;
 
-	@Column(name = "Email")
+	@Column(name = "email")
 	private String email;
 
-	@Column(name = "ContactMethod")
+	@Column(name = "contact_method")
 	private String contactMethod;
 
-	@Column(name = "Updated")
-	private String updated;
-
-	@Enumerated(EnumType.STRING)
-	@Column(name = "Category")
-	private Category category;
-
-	@Column(name = "Description")
+	@Column(name = "description")
 	private String description;
 
+	@Column(name = "coordinates")
+	private String coordinates;
+
+	@Column(name = "feedback")
+	private String feedback;
+
 	@Enumerated(EnumType.STRING)
-	@Column(name = "Status")
+	@Column(name = "category")
+	private Category category;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "status")
 	private Status status;
 
-	@Column(name = "MapCoordinates")
-	private String mapCoordinates;
+	@Column(name = "updated")
+	private LocalDateTime updated;
 
-	@Column(name = "Feedback")
-	private String feedback;
+	@Column(name = "created")
+	private LocalDateTime created;
+
+	@PrePersist
+	void prePersist() {
+		var now = LocalDateTime.now();
+		this.updated = now;
+		this.created = now;
+	}
+
+	@PreUpdate
+	void preUpdate() {
+		this.updated = LocalDateTime.now();
+	}
+
 }

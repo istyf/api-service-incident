@@ -1,15 +1,16 @@
 package se.sundsvall.incident.api.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder(setterPrefix = "with", builderClassName = "Builder")
-@JsonDeserialize(builder = ValidCategoryResponse.Builder.class)
-@AllArgsConstructor
+@Builder(setterPrefix = "with")
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 public class ValidCategoryResponse {
-    private String category;
-    private Integer CATEGORY_ID;
+
+	private String category;
+	private Integer categoryId;
+
 }

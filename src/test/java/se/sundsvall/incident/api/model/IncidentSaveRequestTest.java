@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static se.sundsvall.incident.TestDataFactory.PERSONID;
 import static se.sundsvall.incident.TestDataFactory.buildIncidentSaveRequest;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import se.sundsvall.incident.dto.Category;
@@ -24,6 +26,14 @@ class IncidentSaveRequestTest {
 		assertThat(request.getExternalCaseId()).isEqualTo("123");
 		assertThat(request.getAttachments()).hasSize(1);
 
+	}
+
+	@Test
+	void allArgsConstructor() {
+		var request = new IncidentSaveRequest("personId", "phoneNumber", "email", "contactMethod",
+			5, "description", "mapCoordinates", "externalCaseId", List.of());
+
+		assertThat(request).isNotNull();
 	}
 
 	@Test
