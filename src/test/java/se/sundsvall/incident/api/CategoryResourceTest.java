@@ -2,7 +2,6 @@ package se.sundsvall.incident.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -89,7 +88,7 @@ class CategoryResourceTest {
 		assertThat(response.getBody()).isNotNull();
 		assertThat(response.getBody()).hasSize(1);
 
-		verify(mockCategoryService, times(1)).fetchValidCategories();
+		verify(mockCategoryService).fetchValidCategories();
 		verifyNoMoreInteractions(mockCategoryService);
 	}
 
@@ -100,10 +99,8 @@ class CategoryResourceTest {
 		var response = categoryResource.getValidOepCategories();
 		assertThat(response).isNotNull();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(response.getBody()).isNotNull();
-		assertThat(response.getBody()).hasSize(1);
-
-		verify(mockCategoryService, times(1)).fetchValidOepCategories();
+		assertThat(response.getBody()).isNotNull().hasSize(1);
+		verify(mockCategoryService).fetchValidOepCategories();
 		verifyNoMoreInteractions(mockCategoryService);
 	}
 

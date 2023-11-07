@@ -13,7 +13,7 @@ import se.sundsvall.incident.api.model.IncidentSaveRequest;
 import se.sundsvall.incident.integration.db.entity.AttachmentEntity;
 import se.sundsvall.incident.integration.db.entity.CategoryEntity;
 import se.sundsvall.incident.integration.db.entity.IncidentEntity;
-import se.sundsvall.incident.integration.db.entity.util.Status;
+import se.sundsvall.incident.integration.db.entity.enums.Status;
 
 public final class Mapper {
 
@@ -56,7 +56,7 @@ public final class Mapper {
 			.withUpdated(entity.getUpdated())
 			.withCreated(entity.getCreated())
 			.withStatus(entity.getStatus())
-			.withCategory(toCategoryDto(entity.getCategory()))
+			.withCategory(toCategory(entity.getCategory()))
 			.withAttachments(entity.getAttachments().stream()
 				.map(Mapper::toAttachment)
 				.toList())
@@ -75,7 +75,7 @@ public final class Mapper {
 			.build();
 	}
 
-	public static Category toCategoryDto(final CategoryEntity entity) {
+	public static Category toCategory(final CategoryEntity entity) {
 		if (entity == null) {
 			return null;
 		}

@@ -21,7 +21,7 @@ import se.sundsvall.incident.api.model.ValidOepCategoryResponse;
 import se.sundsvall.incident.integration.db.entity.AttachmentEntity;
 import se.sundsvall.incident.integration.db.entity.CategoryEntity;
 import se.sundsvall.incident.integration.db.entity.IncidentEntity;
-import se.sundsvall.incident.integration.db.entity.util.Status;
+import se.sundsvall.incident.integration.db.entity.enums.Status;
 
 import generated.se.sundsvall.messaging.EmailAttachment;
 import generated.se.sundsvall.messaging.EmailRequest;

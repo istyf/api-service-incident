@@ -26,7 +26,7 @@ import se.sundsvall.incident.api.model.IncidentResponse;
 import se.sundsvall.incident.api.model.IncidentSaveRequest;
 import se.sundsvall.incident.api.model.IncidentSaveResponse;
 import se.sundsvall.incident.api.model.ValidStatusResponse;
-import se.sundsvall.incident.integration.db.entity.util.Status;
+import se.sundsvall.incident.integration.db.entity.enums.Status;
 import se.sundsvall.incident.service.IncidentService;
 
 import io.swagger.v3.oas.annotations.Operation;

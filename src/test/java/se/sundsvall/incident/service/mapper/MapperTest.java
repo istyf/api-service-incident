@@ -5,7 +5,7 @@ import static se.sundsvall.incident.TestDataFactory.createCategoryEntity;
 import static se.sundsvall.incident.TestDataFactory.createCategoryPost;
 import static se.sundsvall.incident.service.mapper.Mapper.toAttachment;
 import static se.sundsvall.incident.service.mapper.Mapper.toAttachmentEntity;
-import static se.sundsvall.incident.service.mapper.Mapper.toCategoryDto;
+import static se.sundsvall.incident.service.mapper.Mapper.toCategory;
 import static se.sundsvall.incident.service.mapper.Mapper.toCategoryEntity;
 import static se.sundsvall.incident.service.mapper.Mapper.toIncidentEntity;
 import static se.sundsvall.incident.service.mapper.Mapper.toIncidentOepResponse;
@@ -16,22 +16,22 @@ import org.junit.jupiter.api.Test;
 class MapperTest {
 
 	@Test
-	void toCategoryDtoTest() {
+	void toCategoryTest() {
 		var entity = createCategoryEntity();
 
-		var dto = toCategoryDto(entity);
+		var category = toCategory(entity);
 
-		assertThat(dto.getCategoryId()).isEqualTo(entity.getCategoryId());
-		assertThat(dto.getTitle()).isEqualTo(entity.getTitle());
-		assertThat(dto.getLabel()).isEqualTo(entity.getLabel());
-		assertThat(dto.getForwardTo()).isEqualTo(entity.getForwardTo());
+		assertThat(category.getCategoryId()).isEqualTo(entity.getCategoryId());
+		assertThat(category.getTitle()).isEqualTo(entity.getTitle());
+		assertThat(category.getLabel()).isEqualTo(entity.getLabel());
+		assertThat(category.getForwardTo()).isEqualTo(entity.getForwardTo());
 	}
 
 	@Test
-	void toCategoryDtoWhenNullTest() {
-		var dto = toCategoryDto(null);
+	void toCategoryWhenNullTest() {
+		var category = toCategory(null);
 
-		assertThat(dto).isNull();
+		assertThat(category).isNull();
 	}
 
 	@Test
@@ -59,20 +59,20 @@ class MapperTest {
 
 	@Test
 	void toIncidentResponseWhenNullTest() {
-		var entity = toIncidentResponse(null);
-		assertThat(entity).isNull();
+		var response = toIncidentResponse(null);
+		assertThat(response).isNull();
 	}
 
 	@Test
 	void toIncidentOepResponseWhenNullTest() {
-		var entity = toIncidentOepResponse(null);
-		assertThat(entity).isNull();
+		var response = toIncidentOepResponse(null);
+		assertThat(response).isNull();
 	}
 
 	@Test
 	void toAttachmentWhenNullTest() {
-		var entity = toAttachment(null);
-		assertThat(entity).isNull();
+		var attachment = toAttachment(null);
+		assertThat(attachment).isNull();
 	}
 
 	@Test

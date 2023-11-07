@@ -3,7 +3,7 @@ package se.sundsvall.incident.api.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import se.sundsvall.incident.integration.db.entity.util.Status;
+import se.sundsvall.incident.integration.db.entity.enums.Status;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;

@@ -21,7 +21,7 @@ import se.sundsvall.incident.api.model.IncidentResponse;
 import se.sundsvall.incident.api.model.IncidentSaveRequest;
 import se.sundsvall.incident.api.model.IncidentSaveResponse;
 import se.sundsvall.incident.integration.db.entity.IncidentEntity;
-import se.sundsvall.incident.integration.db.entity.util.Status;
+import se.sundsvall.incident.integration.db.entity.enums.Status;
 import se.sundsvall.incident.integration.db.repository.CategoryRepository;
 import se.sundsvall.incident.integration.db.repository.IncidentRepository;
 import se.sundsvall.incident.integration.lifebuoy.LifeBuoyIntegration;
@@ -71,7 +71,7 @@ public class IncidentService {
 	public List<IncidentResponse> fetchPaginatedIncidents(final Optional<Integer> pageNumber,
 		final Optional<Integer> pageSize) {
 		var incidents = incidentRepository.findAll(
-			PageRequest.of(pageNumber.orElse(0), pageSize.orElse(0)));
+			PageRequest.of(pageNumber.orElse(0), pageSize.orElse(100)));
 
 		return incidents.stream()
 			.map(Mapper::toIncidentResponse)

@@ -7,7 +7,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -21,6 +20,8 @@ import java.util.Optional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -33,7 +34,7 @@ import se.sundsvall.incident.api.model.IncidentOepResponse;
 import se.sundsvall.incident.api.model.IncidentResponse;
 import se.sundsvall.incident.api.model.IncidentSaveResponse;
 import se.sundsvall.incident.integration.db.entity.IncidentEntity;
-import se.sundsvall.incident.integration.db.entity.util.Status;
+import se.sundsvall.incident.integration.db.entity.enums.Status;
 import se.sundsvall.incident.integration.db.repository.CategoryRepository;
 import se.sundsvall.incident.integration.db.repository.IncidentRepository;
 import se.sundsvall.incident.integration.lifebuoy.LifeBuoyIntegration;
@@ -66,7 +67,7 @@ class IncidentServiceTest {
 		var result = incidentService.fetchIncidentById(anyString());
 
 		assertThat(result).isNotNull().isInstanceOf(IncidentResponse.class);
-		verify(mockIncidentRepository, times(1)).findById(anyString());
+		verify(mockIncidentRepository).findById(anyString());
 		verifyNoMoreInteractions(mockIncidentRepository);
 	}
 
@@ -78,6 +79,7 @@ class IncidentServiceTest {
 			.hasMessageContaining("Not Found: Incident with id:  not found")
 			.isInstanceOf(Problem.class);
 
+		verify(mockIncidentRepository).findById(anyString());
 	}
 
 	@Test
@@ -88,7 +90,7 @@ class IncidentServiceTest {
 		var result = incidentService.fetchOepIncidentStatus(anyString());
 
 		assertThat(result).isNotNull().isInstanceOf(IncidentOepResponse.class);
-		verify(mockIncidentRepository, times(1)).findIncidentEntityByExternalCaseId(any());
+		verify(mockIncidentRepository).findIncidentEntityByExternalCaseId(any());
 		verifyNoMoreInteractions(mockIncidentRepository);
 	}
 
@@ -99,6 +101,8 @@ class IncidentServiceTest {
 		assertThatThrownBy(() -> incidentService.fetchOepIncidentStatus(anyString()))
 			.hasMessageContaining("Not Found: Incident with id:  not found")
 			.isInstanceOf(Problem.class);
+
+		verify(mockIncidentRepository).findIncidentEntityByExternalCaseId(anyString());
 	}
 
 	@Test
@@ -110,7 +114,7 @@ class IncidentServiceTest {
 		var result = incidentService.fetchPaginatedIncidents(Optional.of(1), Optional.of(2));
 
 		assertThat(result).hasSize(2);
-		verify(mockIncidentRepository, times(1)).findAll(any(PageRequest.class));
+		verify(mockIncidentRepository).findAll(any(PageRequest.class));
 		verifyNoMoreInteractions(mockIncidentRepository);
 	}
 
@@ -122,8 +126,8 @@ class IncidentServiceTest {
 		var result = incidentService.createIncident(request);
 
 		assertThat(result).isNotNull().isInstanceOf(IncidentSaveResponse.class);
-		verify(mockCategoryRepository, times(1)).findById(any());
-		verify(mockIncidentRepository, times(1)).save(any());
+		verify(mockCategoryRepository).findById(any());
+		verify(mockIncidentRepository).save(any());
 		verifyNoMoreInteractions(mockCategoryRepository);
 	}
 
@@ -136,6 +140,7 @@ class IncidentServiceTest {
 			.isInstanceOf(Problem.class)
 			.hasMessageContaining("Not Found: Category with id: ");
 
+		verify(mockCategoryRepository).findById(request.getCategory());
 		verify(mockIncidentRepository, never()).save(any());
 	}
 
@@ -147,8 +152,8 @@ class IncidentServiceTest {
 		incidentService.updateIncidentStatus(entity.getIncidentId(), 7);
 
 		assertThat(entity.getStatus()).isEqualTo(Status.ARKIVERAD);
-		verify(mockIncidentRepository, times(1)).findById(any());
-		verify(mockIncidentRepository, times(1)).save(entity);
+		verify(mockIncidentRepository).findById(entity.getIncidentId());
+		verify(mockIncidentRepository).save(entity);
 		verifyNoMoreInteractions(mockIncidentRepository);
 	}
 
@@ -162,7 +167,7 @@ class IncidentServiceTest {
 			.hasMessageContaining("Not Found: Incident with id: ");
 
 		assertThat(entity.getStatus()).isEqualTo(Status.INSKICKAT);
-		verify(mockIncidentRepository, times(1)).findById(any());
+		verify(mockIncidentRepository).findById(entity.getIncidentId());
 		verify(mockIncidentRepository, never()).save(entity);
 	}
 
@@ -174,8 +179,8 @@ class IncidentServiceTest {
 		incidentService.updateIncidentFeedback(entity.getIncidentId(), "Feedback!!");
 
 		assertThat(entity.getFeedback()).isEqualTo("Feedback!!");
-		verify(mockIncidentRepository, times(1)).findById(any());
-		verify(mockIncidentRepository, times(1)).save(entity);
+		verify(mockIncidentRepository).findById(entity.getIncidentId());
+		verify(mockIncidentRepository).save(entity);
 		verifyNoMoreInteractions(mockIncidentRepository);
 	}
 
@@ -188,12 +193,13 @@ class IncidentServiceTest {
 			.isInstanceOf(Problem.class)
 			.hasMessageContaining("Not Found: Incident with id: ");
 
-		verify(mockIncidentRepository, times(1)).findById(any());
+		verify(mockIncidentRepository).findById(entity.getIncidentId());
 		verify(mockIncidentRepository, never()).save(entity);
 	}
 
-	@Test
-	void sendNotification_LIVBAT_Test() throws JsonProcessingException {
+	@ParameterizedTest
+	@ValueSource(strings = {"LIVBAT", "LIVBOJ"})
+	void sendNotification_Lifebuoy_Test() throws JsonProcessingException {
 		when(mockLifeBuoyIntegration.sendLifeBuoy(any())).thenReturn("nothing");
 		var entity = createIncidentEntity();
 		var category = createCategoryEntity();
@@ -202,20 +208,21 @@ class IncidentServiceTest {
 
 		incidentService.sendNotification(entity);
 
-		verify(mockLifeBuoyIntegration, times(1)).sendLifeBuoy(any());
+		verify(mockLifeBuoyIntegration).sendLifeBuoy(any());
 	}
 
-	@Test
-	void sendNotification_VATTENMATARE_Test() {
+	@ParameterizedTest
+	@ValueSource(strings = {"VATTENMATARE", "BRADD_OVERVAKNINGS_LARM"})
+	void sendNotificationTest(final String categoryTitle) {
 		when(mockMessagingIntegration.sendMSVAEmail(any())).thenReturn(Optional.of(new MessageResult()));
 		var entity = createIncidentEntity();
 		var category = createCategoryEntity();
-		category.setTitle("VATTENMATARE");
+		category.setTitle(categoryTitle);
 		entity.setCategory(category);
 
 		incidentService.sendNotification(entity);
 
-		verify(mockMessagingIntegration, times(1)).sendMSVAEmail(any());
+		verify(mockMessagingIntegration).sendMSVAEmail(entity);
 	}
 
 	@Test
@@ -229,7 +236,7 @@ class IncidentServiceTest {
 		incidentService.sendNotification(entity);
 
 		assertThat(entity.getStatus()).isEqualTo(Status.ERROR);
-		verify(mockLifeBuoyIntegration, times(1)).sendLifeBuoy(any());
+		verify(mockLifeBuoyIntegration).sendLifeBuoy(any());
 	}
 
 }
