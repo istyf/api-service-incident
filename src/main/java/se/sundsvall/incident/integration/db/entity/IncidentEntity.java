@@ -20,7 +20,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
-import se.sundsvall.incident.integration.db.entity.util.Status;
+import se.sundsvall.incident.integration.db.entity.enums.Status;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

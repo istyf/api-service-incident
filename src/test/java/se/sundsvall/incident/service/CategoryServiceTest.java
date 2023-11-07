@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -46,7 +45,7 @@ class CategoryServiceTest {
 
 		assertThat(result).isInstanceOf(Category.class).isNotNull();
 
-		verify(mockCategoryRepository, times(1)).findById(any());
+		verify(mockCategoryRepository).findById(5);
 		verifyNoMoreInteractions(mockCategoryRepository);
 	}
 
@@ -58,6 +57,9 @@ class CategoryServiceTest {
 		assertThatThrownBy(() -> categoryService.fetchCategoryById(any(Integer.class)))
 			.isInstanceOf(Problem.class)
 			.hasMessageContaining("Not Found: Category");
+
+		verify(mockCategoryRepository).findById(anyInt());
+		verifyNoMoreInteractions(mockCategoryRepository);
 	}
 
 	@Test
@@ -68,7 +70,7 @@ class CategoryServiceTest {
 
 		assertThat(categories).isNotNull().isNotEmpty().hasSize(2);
 
-		verify(mockCategoryRepository, times(1)).findAll();
+		verify(mockCategoryRepository).findAll();
 		verifyNoMoreInteractions(mockCategoryRepository);
 	}
 
@@ -80,7 +82,7 @@ class CategoryServiceTest {
 
 		assertThat(categories).isNotNull().isEmpty();
 
-		verify(mockCategoryRepository, times(1)).findAll();
+		verify(mockCategoryRepository).findAll();
 		verifyNoMoreInteractions(mockCategoryRepository);
 	}
 
@@ -95,7 +97,7 @@ class CategoryServiceTest {
 		assertThat(category.getForwardTo()).isEqualTo(entity.getForwardTo());
 		assertThat(category.getTitle()).isEqualTo(entity.getTitle());
 
-		verify(mockCategoryRepository, times(1)).save(any());
+		verify(mockCategoryRepository).save(any());
 		verifyNoMoreInteractions(mockCategoryRepository);
 	}
 
@@ -104,8 +106,8 @@ class CategoryServiceTest {
 		when(mockCategoryRepository.existsById(5)).thenReturn(true);
 
 		categoryService.deleteCategoryById(5);
-		verify(mockCategoryRepository, times(1)).existsById(any());
-		verify(mockCategoryRepository, times(1)).deleteById(any());
+		verify(mockCategoryRepository).existsById(5);
+		verify(mockCategoryRepository).deleteById(5);
 	}
 
 	@Test
@@ -128,8 +130,8 @@ class CategoryServiceTest {
 		var result = categoryService.patchCategory(5, createCategoryPatch());
 
 		assertThat(result).isInstanceOf(Category.class);
-		verify(mockCategoryRepository, times(1)).findById(anyInt());
-		verify(mockCategoryRepository, times(1)).save(any());
+		verify(mockCategoryRepository).findById(5);
+		verify(mockCategoryRepository).save(any());
 	}
 
 	@Test
@@ -140,6 +142,9 @@ class CategoryServiceTest {
 		assertThatThrownBy(() -> categoryService.patchCategory(anyInt(), patch))
 			.isInstanceOf(Problem.class)
 			.hasMessageContaining("Not Found: Category");
+
+		verify(mockCategoryRepository).findById(anyInt());
+		verify(mockCategoryRepository, never()).save(any());
 	}
 
 	@Test
@@ -150,7 +155,7 @@ class CategoryServiceTest {
 
 		assertThat(result).hasSize(2);
 		assertThat(result.get(0)).isInstanceOf(ValidCategoryResponse.class);
-		verify(mockCategoryRepository, times(1)).findAll();
+		verify(mockCategoryRepository).findAll();
 		verifyNoMoreInteractions(mockCategoryRepository);
 	}
 
@@ -162,7 +167,7 @@ class CategoryServiceTest {
 
 		assertThat(result).hasSize(2);
 		assertThat(result.get(0)).isInstanceOf(ValidOepCategoryResponse.class);
-		verify(mockCategoryRepository, times(1)).findAll();
+		verify(mockCategoryRepository).findAll();
 		verifyNoMoreInteractions(mockCategoryRepository);
 	}
 

@@ -1,4 +1,4 @@
-package se.sundsvall.incident.integration.db.entity.util;
+package se.sundsvall.incident.integration.db.entity.enums;
 
 import java.util.Arrays;
 

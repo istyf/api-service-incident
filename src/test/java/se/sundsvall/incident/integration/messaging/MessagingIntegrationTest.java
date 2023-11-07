@@ -1,7 +1,6 @@
 package se.sundsvall.incident.integration.messaging;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.incident.TestDataFactory.createEmailRequest;
@@ -21,10 +20,10 @@ import generated.se.sundsvall.messaging.MessageResult;
 class MessagingIntegrationTest {
 
 	@Mock
-	private MessagingMapper messagingMapper;
+	private MessagingMapper mockMessagingMapper;
 
 	@Mock
-	private MessagingClient messagingClient;
+	private MessagingClient mockMessagingClient;
 
 	@InjectMocks
 	private MessagingIntegration messagingIntegration;
@@ -32,22 +31,22 @@ class MessagingIntegrationTest {
 	@Test
 	void sendEmail() {
 		var incident = createIncidentEntity();
-		when(messagingMapper.toEmailDto(any())).thenReturn(createEmailRequest());
-		when(messagingClient.sendEmail(any())).thenReturn(new MessageResult());
+		when(mockMessagingMapper.toEmailDto(any())).thenReturn(createEmailRequest());
+		when(mockMessagingClient.sendEmail(any())).thenReturn(new MessageResult());
 		messagingIntegration.sendEmail(incident);
 
-		verify(messagingClient, times(1)).sendEmail(any(EmailRequest.class));
-		verify(messagingMapper, times(1)).toEmailDto(any());
+		verify(mockMessagingClient).sendEmail(any(EmailRequest.class));
+		verify(mockMessagingMapper).toEmailDto(any());
 	}
 
 	@Test
 	void sendMSVAEmail() {
 		var incident = createIncidentEntity();
-		when(messagingMapper.toMSVAEmailRequest(any())).thenReturn(createMSVAEmailRequest());
-		when(messagingClient.sendEmail(any())).thenReturn(new MessageResult());
+		when(mockMessagingMapper.toMSVAEmailRequest(any())).thenReturn(createMSVAEmailRequest());
+		when(mockMessagingClient.sendEmail(any())).thenReturn(new MessageResult());
 		messagingIntegration.sendMSVAEmail(incident);
 
-		verify(messagingClient, times(1)).sendEmail(any(EmailRequest.class));
-		verify(messagingMapper, times(1)).toMSVAEmailRequest(any());
+		verify(mockMessagingClient).sendEmail(any(EmailRequest.class));
+		verify(mockMessagingMapper).toMSVAEmailRequest(any());
 	}
 }

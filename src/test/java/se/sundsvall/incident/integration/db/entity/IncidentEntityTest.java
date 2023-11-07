@@ -28,7 +28,7 @@ import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import se.sundsvall.incident.integration.db.entity.util.Status;
+import se.sundsvall.incident.integration.db.entity.enums.Status;
 
 class IncidentEntityTest {
 

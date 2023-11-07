@@ -3,7 +3,6 @@ package se.sundsvall.incident.api;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
@@ -23,7 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
-import se.sundsvall.incident.integration.db.entity.util.Status;
+import se.sundsvall.incident.integration.db.entity.enums.Status;
 import se.sundsvall.incident.service.IncidentService;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,7 +43,7 @@ class IncidentResourceTest {
 		assertThat(response.getStatusCode()).isEqualTo(OK);
 		assertThat(response.getBody()).hasSize(1);
 
-		verify(mockIncidentService, times(1)).fetchPaginatedIncidents(any(), any());
+		verify(mockIncidentService).fetchPaginatedIncidents(Optional.of(0), Optional.of(10));
 	}
 
 	@Test
@@ -56,7 +55,7 @@ class IncidentResourceTest {
 		assertThat(response.getStatusCode()).isEqualTo(OK);
 		assertThat(response.getBody()).isEmpty();
 
-		verify(mockIncidentService, times(1)).fetchPaginatedIncidents(any(), any());
+		verify(mockIncidentService).fetchPaginatedIncidents(Optional.of(0), Optional.of(10));
 	}
 
 	@Test
@@ -69,6 +68,7 @@ class IncidentResourceTest {
 		assertThat(response.getStatusCode()).isEqualTo(OK);
 		assertThat(response.getBody().getIncidentId()).isEqualTo(incidentResponse.getIncidentId());
 		assertThat(response.getBody().getDescription()).isEqualTo(incidentResponse.getDescription());
+		verify(mockIncidentService).fetchIncidentById(anyString());
 	}
 
 	@Test
@@ -78,7 +78,7 @@ class IncidentResourceTest {
 		assertThat(response).isNotNull();
 		assertThat(response.getStatusCode()).isEqualTo(OK);
 		assertThat(response.getBody()).isNotNull();
-		verify(mockIncidentService, times(1)).fetchOepIncidentStatus(anyString());
+		verify(mockIncidentService).fetchOepIncidentStatus(anyString());
 	}
 
 	@Test
@@ -90,7 +90,7 @@ class IncidentResourceTest {
 
 		assertThat(response.getStatusCode()).isEqualTo(OK);
 		assertThat(response.getBody()).isNotNull();
-		verify(mockIncidentService, times(1)).createIncident(any());
+		verify(mockIncidentService).createIncident(any());
 	}
 
 	@Test
@@ -98,7 +98,7 @@ class IncidentResourceTest {
 		var uuid = UUID.randomUUID().toString();
 		incidentResource.patchStatus(uuid, 2);
 
-		verify(mockIncidentService, times(1)).updateIncidentStatus(uuid, 2);
+		verify(mockIncidentService).updateIncidentStatus(uuid, 2);
 	}
 
 	@Test
@@ -106,7 +106,7 @@ class IncidentResourceTest {
 		var uuid = UUID.randomUUID().toString();
 		incidentResource.patchFeedback(uuid, "Bra jobbat");
 
-		verify(mockIncidentService, times(1)).updateIncidentFeedback(uuid, "Bra jobbat");
+		verify(mockIncidentService).updateIncidentFeedback(uuid, "Bra jobbat");
 	}
 
 	@Test
