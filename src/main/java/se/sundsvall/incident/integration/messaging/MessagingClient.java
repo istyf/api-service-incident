@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import se.sundsvall.incident.integration.messaging.configuration.MessagingConfiguration;
 
 import generated.se.sundsvall.messaging.EmailRequest;
+import generated.se.sundsvall.messaging.MessageResult;
 
 @FeignClient(
 	name = REGISTRATION_ID,
@@ -25,5 +26,5 @@ public interface MessagingClient {
 	 * @return response containing id and delivery results for sent message
 	 */
 	@PostMapping(path = "/email", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	void sendEmail(@RequestBody final EmailRequest request);
+	MessageResult sendEmail(@RequestBody final EmailRequest request);
 }

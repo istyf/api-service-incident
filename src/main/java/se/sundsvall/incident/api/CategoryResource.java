@@ -24,6 +24,8 @@ import org.zalando.problem.Problem;
 import se.sundsvall.incident.api.model.Category;
 import se.sundsvall.incident.api.model.CategoryPatch;
 import se.sundsvall.incident.api.model.CategoryPost;
+import se.sundsvall.incident.api.model.ValidCategoryResponse;
+import se.sundsvall.incident.api.model.ValidOepCategoryResponse;
 import se.sundsvall.incident.service.CategoryService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -109,6 +111,22 @@ public class CategoryResource {
 	public ResponseEntity<Void> deleteCategoryById(@PathVariable("id") final Integer id) {
 		categoryService.deleteCategoryById(id);
 		return noContent().build();
+	}
+
+	@Operation(summary = "Get a list of valid categories")
+	@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
+	@GetMapping(path = "/valid", produces = {APPLICATION_PROBLEM_JSON_VALUE, APPLICATION_JSON_VALUE})
+	public ResponseEntity<List<ValidCategoryResponse>> getValidCategories() {
+		var validCategories = categoryService.fetchValidCategories();
+		return ok(validCategories);
+	}
+
+	@Operation(summary = "Get a list of valid categories in oep format")
+	@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
+	@GetMapping(path = "/valid/oep", produces = {APPLICATION_PROBLEM_JSON_VALUE, APPLICATION_JSON_VALUE})
+	public ResponseEntity<List<ValidOepCategoryResponse>> getValidOepCategories() {
+		var validOepCategories = categoryService.fetchValidOepCategories();
+		return ok(validOepCategories);
 	}
 
 }

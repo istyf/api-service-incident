@@ -11,52 +11,52 @@ ALTER TABLE IF EXISTS Errands
     RENAME TO incident;
 
 ALTER TABLE IF EXISTS attachment
-    RENAME COLUMN ID TO id;
+    RENAME COLUMN IF EXISTS ID TO id;
 
 ALTER TABLE IF EXISTS attachment
-    RENAME COLUMN IncidentId TO incident_id;
+    RENAME COLUMN IF EXISTS IncidentId TO incident_id;
 
 ALTER TABLE IF EXISTS attachment
-    RENAME COLUMN Created TO created;
+    RENAME COLUMN IF EXISTS Created TO created;
 
 ALTER TABLE IF EXISTS attachment
-    RENAME COLUMN mimetype TO mime_type;
+    RENAME COLUMN IF EXISTS mimetype TO mime_type;
 
 ALTER TABLE IF EXISTS attachment
-    RENAME COLUMN Created TO created;
+    RENAME COLUMN IF EXISTS Created TO created;
 
 ALTER TABLE IF EXISTS incident
-    RENAME COLUMN externalCaseId TO external_case_id;
+    RENAME COLUMN IF EXISTS externalCaseId TO external_case_id;
 
 ALTER TABLE IF EXISTS incident
-    RENAME COLUMN PersonId TO person_id;
+    RENAME COLUMN IF EXISTS PersonId TO person_id;
 
 ALTER TABLE IF EXISTS incident
-    RENAME COLUMN Created TO created;
+    RENAME COLUMN IF EXISTS Created TO created;
 
 ALTER TABLE IF EXISTS incident
-    RENAME COLUMN PhoneNumber TO phone_number;
+    RENAME COLUMN IF EXISTS PhoneNumber TO phone_number;
 
 ALTER TABLE IF EXISTS incident
-    RENAME COLUMN Email TO email;
+    RENAME COLUMN IF EXISTS Email TO email;
 
 ALTER TABLE IF EXISTS incident
-    RENAME COLUMN ContactMethod TO contact_method;
+    RENAME COLUMN IF EXISTS ContactMethod TO contact_method;
 
 ALTER TABLE IF EXISTS incident
-    RENAME COLUMN Updated TO updated;
+    RENAME COLUMN IF EXISTS Updated TO updated;
 
 ALTER TABLE IF EXISTS incident
-    RENAME COLUMN Description TO description;
+    RENAME COLUMN IF EXISTS Description TO description;
 
 ALTER TABLE IF EXISTS incident
-    RENAME COLUMN MapCoordinates TO coordinates;
+    RENAME COLUMN IF EXISTS MapCoordinates TO coordinates;
 
 ALTER TABLE IF EXISTS incident
-    RENAME COLUMN Feedback TO feedback;
+    RENAME COLUMN IF EXISTS Feedback TO feedback;
 
 ALTER TABLE IF EXISTS incident
-    RENAME COLUMN Status TO status;
+    RENAME COLUMN IF EXISTS Status TO status;
 
 ALTER TABLE IF EXISTS incident
     MODIFY person_id VARCHAR(36) NOT NULL;
@@ -68,7 +68,7 @@ ALTER TABLE IF EXISTS incident
     MODIFY updated DATETIME NOT NULL;
 
 ALTER TABLE IF EXISTS incident
-    RENAME COLUMN Category TO category_id;
+    RENAME COLUMN IF EXISTS Category TO category_id;
 
 ALTER TABLE IF EXISTS incident
     MODIFY status ENUM('INSKICKAT', 'KLART', 'KOMPLETTERAD', 'SPARAT', 'UNDER_BEHANDLING',
@@ -83,12 +83,11 @@ ALTER TABLE IF EXISTS attachment
 ALTER TABLE IF EXISTS attachment
     MODIFY file LONGTEXT NOT NULL;
 
+ALTER TABLE IF EXISTS incident
+    DROP COLUMN IF EXISTS ID;
 
 ALTER TABLE IF EXISTS incident
-    DROP COLUMN ID;
-
-ALTER TABLE IF EXISTS incident
-    RENAME COLUMN IncidentId TO id;
+    RENAME COLUMN IF EXISTS IncidentId TO id;
 
 ALTER TABLE IF EXISTS incident
     ADD PRIMARY KEY (id);

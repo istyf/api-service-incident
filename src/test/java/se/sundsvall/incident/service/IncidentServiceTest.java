@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -39,6 +38,8 @@ import se.sundsvall.incident.integration.db.repository.CategoryRepository;
 import se.sundsvall.incident.integration.db.repository.IncidentRepository;
 import se.sundsvall.incident.integration.lifebuoy.LifeBuoyIntegration;
 import se.sundsvall.incident.integration.messaging.MessagingIntegration;
+
+import generated.se.sundsvall.messaging.MessageResult;
 
 @ExtendWith(MockitoExtension.class)
 class IncidentServiceTest {
@@ -206,7 +207,7 @@ class IncidentServiceTest {
 
 	@Test
 	void sendNotification_VATTENMATARE_Test() {
-		doNothing().when(mockMessagingIntegration).sendMSVAEmail(any());
+		when(mockMessagingIntegration.sendMSVAEmail(any())).thenReturn(Optional.of(new MessageResult()));
 		var entity = createIncidentEntity();
 		var category = createCategoryEntity();
 		category.setTitle("VATTENMATARE");

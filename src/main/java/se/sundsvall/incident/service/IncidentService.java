@@ -28,6 +28,9 @@ import se.sundsvall.incident.integration.lifebuoy.LifeBuoyIntegration;
 import se.sundsvall.incident.integration.messaging.MessagingIntegration;
 import se.sundsvall.incident.service.mapper.Mapper;
 
+import generated.se.sundsvall.messaging.MessageResult;
+import generated.se.sundsvall.messaging.MessageStatus;
+
 @Service
 public class IncidentService {
 
@@ -87,7 +90,6 @@ public class IncidentService {
 
 		var incident = toIncidentEntity(request, category, attachments);
 
-		incidentRepository.save(incident);
 		sendNotification(incident);
 
 		return IncidentSaveResponse.builder()
@@ -112,19 +114,35 @@ public class IncidentService {
 		incidentRepository.save(incident);
 	}
 
-	void sendNotification(final IncidentEntity incident) {
+	public void sendNotification(final IncidentEntity incident) {
 		try {
 			switch (incident.getCategory().getTitle()) {
-				case "LIVBAT", "LIVBOJ" ->
+				case "LIVBAT", "LIVBOJ" -> {
 					incident.setExternalCaseId(lifeBuoyIntegration.sendLifeBuoy(incident));
+					incident.setStatus(Status.INSKICKAT);
+				}
 				case "VATTENMATARE", "BRADD_OVERVAKNINGS_LARM" ->
-					messagingIntegration.sendMSVAEmail(incident);
-				default -> messagingIntegration.sendEmail(incident);
+					setIncidentStatus(incident, messagingIntegration.sendMSVAEmail(incident));
+				default -> setIncidentStatus(incident, messagingIntegration.sendEmail(incident));
+
 			}
 		} catch (Exception e) {
-			incident.setStatus(Status.ERROR);
 			log.warn("Unable to send email for new incident with incidentId: {}, Exception was: {}", incident.getIncidentId(), e.getMessage());
+			incident.setStatus(Status.ERROR);
 		}
+		incidentRepository.save(incident);
 	}
 
+	private void setIncidentStatus(final IncidentEntity incident, final Optional<MessageResult> messageResult) {
+		messageResult.ifPresentOrElse(
+			result -> {
+				final var deliveryStatus = result.getDeliveries().get(0).getStatus();
+				if (deliveryStatus == MessageStatus.SENT || deliveryStatus == MessageStatus.PENDING) {
+					incident.setStatus(Status.INSKICKAT);
+				} else {
+					incident.setStatus(Status.ERROR);
+				}
+			},
+			() -> incident.setStatus(Status.ERROR));
+	}
 }

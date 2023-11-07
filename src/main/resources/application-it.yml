@@ -22,7 +22,7 @@ config:
     lifebuoy:
       url: http://localhost:${wiremock.server.port}/lifebuoy
       token-url: http://localhost:${wiremock.server.port}/token
-      client-id: overridec
+      client-id: override
       client-secret: override
       apikey: override
 
