@@ -1,6 +1,9 @@
 package se.sundsvall.incident.api.model;
 
+import java.time.LocalDateTime;
 import java.util.List;
+
+import se.sundsvall.incident.integration.db.entity.util.Status;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,14 +18,14 @@ public class IncidentResponse {
 	private String incidentId;
 	private String externalCaseId;
 	private String personId;
-	private String created;
-	private String updated;
 	private String phoneNumber;
 	private String email;
 	private String contactMethod;
-	private Integer category;
 	private String description;
-	private String status;
-	private List<AttachmentResponse> attachments;
+	private Status status;
+	private Category category;
+	private List<Attachment> attachments;
+	private LocalDateTime created;
+	private LocalDateTime updated;
 
 }

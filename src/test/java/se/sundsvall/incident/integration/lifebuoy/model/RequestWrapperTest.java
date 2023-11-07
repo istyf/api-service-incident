@@ -8,20 +8,19 @@ import org.junit.jupiter.api.Test;
 
 class RequestWrapperTest {
 
-    @Test
-    void testBuilderAndSerialization() throws JsonProcessingException {
+	@Test
+	void testBuilderAndSerialization() throws JsonProcessingException {
 
-        var mapper = new ObjectMapper();
-        LifeBuoyRequestWrapper wrapper = LifeBuoyRequestWrapper.builder()
-                .withApiKey("someApiKey")
-                .withErrandJsonString(mapper.writeValueAsString(LifebuoyRequest.builder().build()))
-                .build();
+		var mapper = new ObjectMapper();
+		LifeBuoyRequestWrapper wrapper = LifeBuoyRequestWrapper.builder()
+			.withApiKey("someApiKey")
+			.withErrandJsonString(mapper.writeValueAsString(LifebuoyRequest.builder().build()))
+			.build();
 
+		String serialized;
 
-        String serialized;
+		serialized = new ObjectMapper().writeValueAsString(wrapper);
 
-        serialized = new ObjectMapper().writeValueAsString(wrapper);
-
-        assertThat(serialized).isNotBlank();
-    }
+		assertThat(serialized).isNotBlank();
+	}
 }
