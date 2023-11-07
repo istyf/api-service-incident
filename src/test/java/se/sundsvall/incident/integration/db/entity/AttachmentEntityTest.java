@@ -9,7 +9,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.BDDAssertions.within;
 import static org.hamcrest.CoreMatchers.allOf;
-import static se.sundsvall.incident.TestDataFactory.buildAttachmentEntity;
+import static se.sundsvall.incident.TestDataFactory.createAttachmentEntity;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
@@ -42,16 +42,6 @@ class AttachmentEntityTest {
 
 		assertThat(column.name()).isEqualTo("id");
 		assertThat(generatedValue.strategy()).isEqualTo(GenerationType.IDENTITY);
-	}
-
-	@Test
-	void testIncidentIdHasCorrectAnnotationsAndValues() {
-		final Field incidentId = FieldUtils.getDeclaredField(AttachmentEntity.class, "incidentId", true);
-		assertThat(incidentId.getAnnotations()).hasSize(1);
-		assertThat(incidentId.getType()).isEqualTo(String.class);
-
-		final Column column = incidentId.getDeclaredAnnotation(Column.class);
-		assertThat(column.name()).isEqualTo("incident_id");
 	}
 
 	@Test
@@ -133,7 +123,7 @@ class AttachmentEntityTest {
 
 	@Test
 	void prePersistTest() {
-		var attachment = buildAttachmentEntity();
+		var attachment = createAttachmentEntity();
 		attachment.prePersist();
 
 		assertThat(attachment.getCreated()).isNotNull();

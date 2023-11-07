@@ -1,5 +1,7 @@
 package se.sundsvall.incident.api;
 
+import static org.springframework.http.ResponseEntity.ok;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,8 +14,8 @@ import org.zalando.problem.Problem;
 import se.sundsvall.incident.api.model.ValidCategoryResponse;
 import se.sundsvall.incident.api.model.ValidOepCategoryResponse;
 import se.sundsvall.incident.api.model.ValidStatusResponse;
-import se.sundsvall.incident.dto.Category;
-import se.sundsvall.incident.dto.Status;
+import se.sundsvall.incident.integration.db.entity.util.Status;
+import se.sundsvall.incident.service.CategoryService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -26,11 +28,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/api")
 public class ValidListResource {
 
+	private final CategoryService categoryService;
+
+	public ValidListResource(final CategoryService categoryService) {
+		this.categoryService = categoryService;
+	}
+
 	@Operation(summary = "Get a list of valid statuses")
 	@ApiResponse(
 		responseCode = "200",
 		description = "Successful Operation",
-		content = @Content(schema = @Schema(implementation = ValidStatusResponse.class)))
+		useReturnTypeSchema = true)
 	@ApiResponse(
 		responseCode = "400",
 		description = "Bad Request",
@@ -40,8 +48,8 @@ public class ValidListResource {
 		description = "Internal Server Error",
 		content = @Content(schema = @Schema(implementation = Problem.class)))
 	@GetMapping("/validstatuses")
-	public ResponseEntity<List<ValidStatusResponse>> getValidstatuses() {
-		return ResponseEntity.ok(Arrays.stream(Status.values())
+	public ResponseEntity<List<ValidStatusResponse>> getValidStatuses() {
+		return ok(Arrays.stream(Status.values())
 			.map(dto -> ValidStatusResponse.builder()
 				.withStatus(dto.getLabel())
 				.withStatusId(dto.getValue()).build())
@@ -49,10 +57,8 @@ public class ValidListResource {
 	}
 
 	@Operation(summary = "Get a list of valid categories")
-	@ApiResponse(
-		responseCode = "200",
-		description = "Successful Operation",
-		content = @Content(schema = @Schema(implementation = ValidCategoryResponse.class)))
+	@ApiResponse(responseCode = "200", description = "Successful Operation",
+		useReturnTypeSchema = true)
 	@ApiResponse(
 		responseCode = "400",
 		description = "Bad Request",
@@ -63,19 +69,15 @@ public class ValidListResource {
 		content = @Content(schema = @Schema(implementation = Problem.class)))
 	@GetMapping("/validcategories")
 	public ResponseEntity<List<ValidCategoryResponse>> getValidCategories() {
-		return ResponseEntity.ok(Arrays.stream(Category.values())
-			.map(cat -> ValidCategoryResponse.builder()
-				.withCategory(cat.getLabel())
-				.withCategoryId(cat.getValue())
-				.build())
-			.toList());
+		var validCategories = categoryService.fetchValidCategories();
+		return ok(validCategories);
 	}
 
 	@Operation(summary = "Get a list of valid categories in oep format")
 	@ApiResponse(
 		responseCode = "200",
 		description = "Successful Operation",
-		content = @Content(schema = @Schema(implementation = ValidOepCategoryResponse.class)))
+		useReturnTypeSchema = true)
 	@ApiResponse(
 		responseCode = "400",
 		description = "Bad Request",
@@ -86,11 +88,7 @@ public class ValidListResource {
 		content = @Content(schema = @Schema(implementation = Problem.class)))
 	@GetMapping("validcategories/oep")
 	public ResponseEntity<List<ValidOepCategoryResponse>> getValidOepCategories() {
-		return ResponseEntity.ok(Arrays.stream(Category.values())
-			.map(cat -> ValidOepCategoryResponse.builder()
-				.withKey(String.valueOf(cat.getValue()))
-				.withValue(cat.getLabel())
-				.build())
-			.toList());
+		var validOepCategories = categoryService.fetchValidOepCategories();
+		return ok(validOepCategories);
 	}
 }

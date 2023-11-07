@@ -1,7 +1,10 @@
 package se.sundsvall.incident.integration.db.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -9,12 +12,15 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
-import se.sundsvall.incident.dto.Category;
-import se.sundsvall.incident.dto.Status;
+import se.sundsvall.incident.integration.db.entity.util.Status;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -34,7 +40,7 @@ public class IncidentEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
-	@Column(name = "incident_id")
+	@Column(name = "id")
 	private String incidentId;
 
 	@Column(name = "external_case_id")
@@ -62,12 +68,20 @@ public class IncidentEntity {
 	private String feedback;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "category")
-	private Category category;
-
-	@Enumerated(EnumType.STRING)
 	@Column(name = "status")
 	private Status status;
+
+	@ManyToOne
+	@JoinColumn(name = "category_id")
+	private CategoryEntity category;
+
+	@Builder.Default
+	@OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@JoinTable(
+		name = "incident_attachments",
+		joinColumns = @JoinColumn(name = "incident_id"),
+		inverseJoinColumns = @JoinColumn(name = "attachment_id"))
+	private List<AttachmentEntity> attachments = new ArrayList<>();
 
 	@Column(name = "updated")
 	private LocalDateTime updated;

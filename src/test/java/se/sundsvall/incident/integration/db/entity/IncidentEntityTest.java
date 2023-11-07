@@ -9,7 +9,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.BDDAssertions.within;
 import static org.hamcrest.CoreMatchers.allOf;
-import static se.sundsvall.incident.TestDataFactory.buildIncidentEntity;
+import static se.sundsvall.incident.TestDataFactory.createIncidentEntity;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
@@ -20,14 +20,15 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import se.sundsvall.incident.dto.Category;
-import se.sundsvall.incident.dto.Status;
+import se.sundsvall.incident.integration.db.entity.util.Status;
 
 class IncidentEntityTest {
 
@@ -45,7 +46,7 @@ class IncidentEntityTest {
 		final GeneratedValue generatedValue = incidentId.getDeclaredAnnotation(GeneratedValue.class);
 		final Column column = incidentId.getDeclaredAnnotation(Column.class);
 		assertThat(generatedValue.strategy()).isEqualTo(GenerationType.UUID);
-		assertThat(column.name()).isEqualTo("incident_id");
+		assertThat(column.name()).isEqualTo("id");
 	}
 
 	@Test
@@ -164,12 +165,12 @@ class IncidentEntityTest {
 	void testCategoryHasCorrectAnnotationsAndValues() {
 		final Field category = FieldUtils.getDeclaredField(IncidentEntity.class, "category", true);
 		assertThat(category.getAnnotations()).hasSize(2);
-		assertThat(category.getType()).isEqualTo(Category.class);
+		assertThat(category.getType()).isEqualTo(CategoryEntity.class);
 
-		final Enumerated enumerated = category.getDeclaredAnnotation(Enumerated.class);
-		final Column column = category.getDeclaredAnnotation(Column.class);
-		assertThat(enumerated.value()).isEqualTo(EnumType.STRING);
-		assertThat(column.name()).isEqualTo("category");
+		final JoinColumn joinColumn = category.getDeclaredAnnotation(JoinColumn.class);
+		final ManyToOne manyToOne = category.getDeclaredAnnotation(ManyToOne.class);
+		assertThat(manyToOne).isNotNull();
+		assertThat(joinColumn.name()).isEqualTo("category_id");
 	}
 
 	@Test
@@ -181,11 +182,20 @@ class IncidentEntityTest {
 
 	@Test
 	void preUpdateTest() {
-		var incident = buildIncidentEntity(Category.VATTENMATARE);
+		var incident = createIncidentEntity();
 		incident.preUpdate();
 
 		assertThat(incident.getUpdated()).isNotNull();
 		assertThat(incident.getUpdated()).isCloseTo(now(systemDefault()), within(2, SECONDS));
 	}
-	
+
+	@Test
+	void prePersistTest() {
+		var incident = createIncidentEntity();
+		incident.prePersist();
+
+		assertThat(incident.getCreated()).isNotNull();
+		assertThat(incident.getCreated()).isCloseTo(now(systemDefault()), within(2, SECONDS));
+	}
+
 }

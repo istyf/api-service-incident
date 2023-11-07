@@ -31,9 +31,6 @@ public class AttachmentEntity {
 	@Column(name = "id")
 	private Integer id;
 
-	@Column(name = "incident_id")
-	private String incidentId;
-
 	@Column(name = "category")
 	private String category;
 

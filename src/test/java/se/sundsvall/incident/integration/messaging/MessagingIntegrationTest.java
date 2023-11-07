@@ -4,9 +4,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static se.sundsvall.incident.TestDataFactory.buildEmailRequest;
-import static se.sundsvall.incident.TestDataFactory.buildIncidentDto;
-import static se.sundsvall.incident.TestDataFactory.buildMSVAEmailRequest;
+import static se.sundsvall.incident.TestDataFactory.createEmailRequest;
+import static se.sundsvall.incident.TestDataFactory.createIncidentEntity;
+import static se.sundsvall.incident.TestDataFactory.createMSVAEmailRequest;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,31 +20,31 @@ import generated.se.sundsvall.messaging.EmailRequest;
 class MessagingIntegrationTest {
 
 	@Mock
-	private EmailMapper emailMapper;
+	private MessagingMapper messagingMapper;
 
 	@Mock
 	private MessagingClient messagingClient;
 
 	@InjectMocks
 	private MessagingIntegration messagingIntegration;
-	
+
 	@Test
 	void sendEmail() {
-		var incidentDto = buildIncidentDto();
-		when(emailMapper.toEmailDto(any())).thenReturn(buildEmailRequest());
-		messagingIntegration.sendEmail(incidentDto);
+		var incident = createIncidentEntity();
+		when(messagingMapper.toEmailDto(any())).thenReturn(createEmailRequest());
+		messagingIntegration.sendEmail(incident);
 
 		verify(messagingClient, times(1)).sendEmail(any(EmailRequest.class));
-		verify(emailMapper, times(1)).toEmailDto(any());
+		verify(messagingMapper, times(1)).toEmailDto(any());
 	}
 
 	@Test
 	void sendMSVAEmail() {
-		var incidentDto = buildIncidentDto();
-		when(emailMapper.toMSVAEmailDto(any())).thenReturn(buildMSVAEmailRequest());
-		messagingIntegration.sendMSVAEmail(incidentDto);
+		var incident = createIncidentEntity();
+		when(messagingMapper.toMSVAEmailRequest(any())).thenReturn(createMSVAEmailRequest());
+		messagingIntegration.sendMSVAEmail(incident);
 
 		verify(messagingClient, times(1)).sendEmail(any(EmailRequest.class));
-		verify(emailMapper, times(1)).toMSVAEmailDto(any());
+		verify(messagingMapper, times(1)).toMSVAEmailRequest(any());
 	}
 }

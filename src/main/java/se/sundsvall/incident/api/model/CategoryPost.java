@@ -18,5 +18,9 @@ public record CategoryPost(
 	@NotBlank
 	@Email
 	@Schema(description = "The E-mail where the incidents are forwarded to", example = "nowhere@nowhere.com", requiredMode = Schema.RequiredMode.REQUIRED)
-	String forwardTo) {
+	String forwardTo,
+
+	@NotBlank
+	@Schema(description = "The subject of the email", example = "Nytt larm", requiredMode = Schema.RequiredMode.REQUIRED)
+	String subject) {
 }

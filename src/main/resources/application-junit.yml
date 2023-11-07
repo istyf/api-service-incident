@@ -1,0 +1,24 @@
+config:
+  datasource:
+    url: http://nowhere.com
+    username: override
+    password: override
+  jpa:
+    ddl-auto: validate
+    defer-datasource-initialization: false
+  flyway:
+    enabled: true
+  integration:
+    messaging:
+      url: http://nowhere.com
+      sender:
+        address: override
+        name: override
+        reply-to: override
+      client-id: override
+      client-secret: override
+    lifebuoy:
+      apikey: override
+      url: http://nowhere.com
+
+

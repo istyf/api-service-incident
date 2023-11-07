@@ -1,4 +1,4 @@
-package se.sundsvall.incident.integration.db;
+package se.sundsvall.incident.integration.db.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

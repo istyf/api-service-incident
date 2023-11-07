@@ -1,4 +1,4 @@
-package se.sundsvall.incident.integration.db;
+package se.sundsvall.incident.integration.db.repository;
 
 import java.util.Optional;
 

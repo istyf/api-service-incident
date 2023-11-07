@@ -3,6 +3,8 @@ package se.sundsvall.incident.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -21,12 +23,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.problem.Problem;
 
-import se.sundsvall.incident.api.model.CategoryDTO;
-import se.sundsvall.incident.integration.db.CategoryRepository;
+import se.sundsvall.incident.api.model.Category;
+import se.sundsvall.incident.api.model.ValidCategoryResponse;
+import se.sundsvall.incident.api.model.ValidOepCategoryResponse;
+import se.sundsvall.incident.integration.db.repository.CategoryRepository;
 
 @ExtendWith(MockitoExtension.class)
 class CategoryServiceTest {
-
 
 	@Mock
 	private CategoryRepository mockCategoryRepository;
@@ -37,28 +40,24 @@ class CategoryServiceTest {
 	@Test
 	void fetchCategoryByIdTest() {
 		when(mockCategoryRepository.findById(any(Integer.class)))
-			.thenReturn(Optional.ofNullable(createCategoryEntity()));
+			.thenReturn(Optional.of(createCategoryEntity()));
 
 		var result = categoryService.fetchCategoryById(5);
 
-		assertThat(result).isInstanceOf(CategoryDTO.class).isNotNull();
+		assertThat(result).isInstanceOf(Category.class).isNotNull();
 
 		verify(mockCategoryRepository, times(1)).findById(any());
 		verifyNoMoreInteractions(mockCategoryRepository);
 	}
 
 	@Test
-	void fetchCategoryByIdWhenNotFoundTest() {
-		final var id = 5;
+	void fetchCategoryByIdNotFoundTest() {
 		when(mockCategoryRepository.findById(any(Integer.class)))
 			.thenReturn(Optional.empty());
 
-		assertThatThrownBy(() -> categoryService.fetchCategoryById(id))
-			.hasMessageContaining("Category with id: " + id + " not found")
-			.isInstanceOf(Problem.class);
-
-		verify(mockCategoryRepository, times(1)).findById(any());
-		verifyNoMoreInteractions(mockCategoryRepository);
+		assertThatThrownBy(() -> categoryService.fetchCategoryById(any(Integer.class)))
+			.isInstanceOf(Problem.class)
+			.hasMessageContaining("Not Found: Category");
 	}
 
 	@Test
@@ -101,73 +100,70 @@ class CategoryServiceTest {
 	}
 
 	@Test
-	void deleteCategoryByIdWhenFoundTest() {
-		when(mockCategoryRepository.existsById(any(Integer.class))).thenReturn(true);
+	void deleteCategoryByIdTest() {
+		when(mockCategoryRepository.existsById(5)).thenReturn(true);
 
 		categoryService.deleteCategoryById(5);
-
 		verify(mockCategoryRepository, times(1)).existsById(any());
 		verify(mockCategoryRepository, times(1)).deleteById(any());
 	}
 
 	@Test
-	void deleteCategoryByIdWhenNotFoundTest() {
-		final var id = 5;
-		when(mockCategoryRepository.existsById(any(Integer.class))).thenReturn(false);
+	void deleteCategoryByIdNotFoundTest() {
+		when(mockCategoryRepository.existsById(anyInt())).thenReturn(false);
 
-		assertThatThrownBy(() -> categoryService.deleteCategoryById(id))
-			.hasMessageContaining("Category with id: " + id + " not found")
-			.isInstanceOf(Problem.class);
+		assertThatThrownBy(() -> categoryService.deleteCategoryById(anyInt()))
+			.isInstanceOf(Problem.class)
+			.hasMessageContaining("Not Found: Category");
 
-		verify(mockCategoryRepository, times(1)).existsById(any());
-		verifyNoMoreInteractions(mockCategoryRepository);
-	}
-
-	@Test
-	void patchCategoryWhenFoundTest() {
-		final var entity = createCategoryEntity();
-		final var patch = createCategoryPatch();
-		when(mockCategoryRepository.findById(any(Integer.class))).thenReturn(Optional.of(entity));
-		when(mockCategoryRepository.save(any())).thenReturn(categoryService.patchEntity(entity, patch));
-
-		final var patchedEntity = categoryService.patchCategory(entity.getCategoryId(), patch);
-
-		assertThat(patchedEntity.getTitle()).isEqualTo(patch.title());
-		assertThat(patchedEntity.getLabel()).isEqualTo(entity.getLabel());
-		assertThat(patchedEntity.getForwardTo()).isEqualTo(entity.getForwardTo());
-
-		verify(mockCategoryRepository, times(1)).findById(any());
-		verifyNoMoreInteractions(mockCategoryRepository);
-	}
-
-	@Test
-	void patchCompanyWhenNotFoundTest() {
-		final var id = 5;
-		when(mockCategoryRepository.findById(any(Integer.class))).thenReturn(Optional.empty());
-
-		assertThatThrownBy(() -> categoryService.patchCategory(id, any()))
-			.hasMessageContaining("Category with id: " + id + " not found")
-			.isInstanceOf(Problem.class);
-
-		verify(mockCategoryRepository, times(1)).findById(any());
+		verify(mockCategoryRepository, never()).deleteById(any());
 	}
 
 	@Test
 	void patchEntityTest() {
-		final var entity = createCategoryEntity();
-		final var titleBeforePatch = entity.getTitle();
-		final var forwardToBeforePatch = entity.getForwardTo();
-		final var patch = createCategoryPatch();
+		var entity = createCategoryEntity();
+		when(mockCategoryRepository.findById(anyInt())).thenReturn(Optional.ofNullable(entity));
+		when(mockCategoryRepository.save(any())).thenReturn(entity);
 
-		final var patchedEntity = categoryService.patchEntity(entity, patch);
+		var result = categoryService.patchCategory(5, createCategoryPatch());
 
-		assertThat(patchedEntity.getTitle()).satisfies(title -> {
-			assertThat(title).isEqualTo(patch.title());
-			assertThat(title).isNotEqualTo(titleBeforePatch);
-		});
-		assertThat(patchedEntity.getForwardTo()).satisfies(email -> {
-			assertThat(email).isEqualTo(forwardToBeforePatch);
-			assertThat(email).isNotEqualTo(patch.forwardTo());
-		});
+		assertThat(result).isInstanceOf(Category.class);
+		verify(mockCategoryRepository, times(1)).findById(anyInt());
+		verify(mockCategoryRepository, times(1)).save(any());
 	}
+
+	@Test
+	void patchEntityNotFoundTest() {
+		var patch = createCategoryPatch();
+		when(mockCategoryRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+		assertThatThrownBy(() -> categoryService.patchCategory(anyInt(), patch))
+			.isInstanceOf(Problem.class)
+			.hasMessageContaining("Not Found: Category");
+	}
+
+	@Test
+	void fetchValidCategoriesTest() {
+		when(mockCategoryRepository.findAll()).thenReturn(List.of(createCategoryEntity(), createCategoryEntity()));
+
+		var result = categoryService.fetchValidCategories();
+
+		assertThat(result).hasSize(2);
+		assertThat(result.get(0)).isInstanceOf(ValidCategoryResponse.class);
+		verify(mockCategoryRepository, times(1)).findAll();
+		verifyNoMoreInteractions(mockCategoryRepository);
+	}
+
+	@Test
+	void fetchValidOepCategoriesTest() {
+		when(mockCategoryRepository.findAll()).thenReturn(List.of(createCategoryEntity(), createCategoryEntity()));
+
+		var result = categoryService.fetchValidOepCategories();
+
+		assertThat(result).hasSize(2);
+		assertThat(result.get(0)).isInstanceOf(ValidOepCategoryResponse.class);
+		verify(mockCategoryRepository, times(1)).findAll();
+		verifyNoMoreInteractions(mockCategoryRepository);
+	}
+
 }

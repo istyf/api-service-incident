@@ -40,4 +40,7 @@ public class CategoryEntity {
 	@Column(name = "forward_to")
 	private String forwardTo;
 
+	@Column(name = "subject")
+	private String subject;
+
 }

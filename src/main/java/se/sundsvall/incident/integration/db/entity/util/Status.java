@@ -1,4 +1,4 @@
-package se.sundsvall.incident.dto;
+package se.sundsvall.incident.integration.db.entity.util;
 
 import java.util.Arrays;
 
