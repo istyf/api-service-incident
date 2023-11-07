@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import generated.se.sundsvall.messaging.EmailRequest;
+import generated.se.sundsvall.messaging.MessageResult;
 
 @ExtendWith(MockitoExtension.class)
 class MessagingIntegrationTest {
@@ -32,6 +33,7 @@ class MessagingIntegrationTest {
 	void sendEmail() {
 		var incident = createIncidentEntity();
 		when(messagingMapper.toEmailDto(any())).thenReturn(createEmailRequest());
+		when(messagingClient.sendEmail(any())).thenReturn(new MessageResult());
 		messagingIntegration.sendEmail(incident);
 
 		verify(messagingClient, times(1)).sendEmail(any(EmailRequest.class));
@@ -42,6 +44,7 @@ class MessagingIntegrationTest {
 	void sendMSVAEmail() {
 		var incident = createIncidentEntity();
 		when(messagingMapper.toMSVAEmailRequest(any())).thenReturn(createMSVAEmailRequest());
+		when(messagingClient.sendEmail(any())).thenReturn(new MessageResult());
 		messagingIntegration.sendMSVAEmail(incident);
 
 		verify(messagingClient, times(1)).sendEmail(any(EmailRequest.class));

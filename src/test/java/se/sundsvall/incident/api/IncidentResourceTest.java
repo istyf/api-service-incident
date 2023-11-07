@@ -21,7 +21,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 
+import se.sundsvall.incident.integration.db.entity.util.Status;
 import se.sundsvall.incident.service.IncidentService;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,7 +54,7 @@ class IncidentResourceTest {
 		var response = incidentResource.fetchAllIncidents(Optional.of(0), Optional.of(10));
 
 		assertThat(response.getStatusCode()).isEqualTo(OK);
-		assertThat(response.getBody()).hasSize(0);
+		assertThat(response.getBody()).isEmpty();
 
 		verify(mockIncidentService, times(1)).fetchPaginatedIncidents(any(), any());
 	}
@@ -94,7 +96,7 @@ class IncidentResourceTest {
 	@Test
 	void updateIncidentStatusTest() {
 		var uuid = UUID.randomUUID().toString();
-		incidentResource.updateIncidentStatus(uuid, 2);
+		incidentResource.patchStatus(uuid, 2);
 
 		verify(mockIncidentService, times(1)).updateIncidentStatus(uuid, 2);
 	}
@@ -102,9 +104,22 @@ class IncidentResourceTest {
 	@Test
 	void updateIncidentFeedbackTest() {
 		var uuid = UUID.randomUUID().toString();
-		incidentResource.updateIncidentFeedback(uuid, "Bra jobbat");
+		incidentResource.patchFeedback(uuid, "Bra jobbat");
 
 		verify(mockIncidentService, times(1)).updateIncidentFeedback(uuid, "Bra jobbat");
+	}
+
+	@Test
+	void getValidStatuses() {
+		var response = incidentResource.getValidIncidentStatuses();
+		assertThat(response).isNotNull();
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(response.getBody()).isNotNull();
+		assertThat(response.getBody()).hasSize(Status.values().length);
+		response.getBody()
+			.forEach(validStatusResponse -> assertThat(validStatusResponse.getStatus())
+				.isEqualTo(Status.forValue(validStatusResponse.getStatusId())
+					.getLabel()));
 	}
 
 }

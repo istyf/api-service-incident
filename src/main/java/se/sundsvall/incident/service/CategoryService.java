@@ -5,7 +5,6 @@ import static org.zalando.problem.Status.NOT_FOUND;
 import static se.sundsvall.incident.service.mapper.Mapper.toCategoryDto;
 import static se.sundsvall.incident.service.mapper.Mapper.toCategoryEntity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -22,8 +21,8 @@ import se.sundsvall.incident.service.mapper.Mapper;
 
 @Service
 public class CategoryService {
-	private static final String ENTITY_NOT_FOUND = "%s with id: %s not found";
-	private static final String CATEGORY = "Category";
+
+	private static final String CATEGORY_NOT_FOUND = "Category with id: %s not found";
 	private final CategoryRepository categoryRepository;
 
 	public CategoryService(final CategoryRepository categoryRepository) {
@@ -32,7 +31,7 @@ public class CategoryService {
 
 	public Category fetchCategoryById(final Integer id) {
 		var category = categoryRepository.findById(id)
-			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ENTITY_NOT_FOUND.formatted(CATEGORY, id)));
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, CATEGORY_NOT_FOUND.formatted(id)));
 		return toCategoryDto(category);
 	}
 
@@ -49,42 +48,34 @@ public class CategoryService {
 
 	public void deleteCategoryById(final Integer id) {
 		if (!categoryRepository.existsById(id)) {
-			throw Problem.valueOf(NOT_FOUND, ENTITY_NOT_FOUND.formatted(CATEGORY, id));
+			throw Problem.valueOf(NOT_FOUND, CATEGORY_NOT_FOUND.formatted(id));
 		}
 		categoryRepository.deleteById(id);
 	}
 
 	public Category patchCategory(final Integer id, final CategoryPatch patch) {
 		var categoryEntity = categoryRepository.findById(id)
-			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ENTITY_NOT_FOUND.formatted(CATEGORY, id)));
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, CATEGORY_NOT_FOUND.formatted(id)));
 		var category = categoryRepository.save(patchCategory(categoryEntity, patch));
 		return toCategoryDto(category);
 	}
 
 	public List<ValidCategoryResponse> fetchValidCategories() {
-		List<ValidCategoryResponse> validCategories = new ArrayList<>();
-		var categories = categoryRepository.findAll();
-
-		for (var category : categories) {
-			validCategories.add(ValidCategoryResponse.builder()
+		return categoryRepository.findAll().stream()
+			.map(category -> ValidCategoryResponse.builder()
 				.withCategory(category.getLabel())
 				.withCategoryId(category.getCategoryId())
-				.build());
-		}
-		return validCategories;
+				.build())
+			.toList();
 	}
 
 	public List<ValidOepCategoryResponse> fetchValidOepCategories() {
-		List<ValidOepCategoryResponse> validOepCategories = new ArrayList<>();
-		var categories = categoryRepository.findAll();
-
-		for (var category : categories) {
-			validOepCategories.add(ValidOepCategoryResponse.builder()
+		return categoryRepository.findAll().stream()
+			.map(category -> ValidOepCategoryResponse.builder()
 				.withKey(String.valueOf(category.getCategoryId()))
 				.withValue(category.getLabel())
-				.build());
-		}
-		return validOepCategories;
+				.build())
+			.toList();
 	}
 
 	CategoryEntity patchCategory(final CategoryEntity entity, final CategoryPatch patch) {

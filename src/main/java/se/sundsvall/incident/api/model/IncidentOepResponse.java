@@ -1,5 +1,6 @@
 package se.sundsvall.incident.api.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,9 +11,16 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 public class IncidentOepResponse {
 
+	@Schema(description = "The incident ID", example = "58f96da8-6d76-4fa6-bb92-64f71fdc6aa5")
 	private String incidentId;
+
+	@Schema(description = "The external case ID", example = "12345")
 	private String externalCaseId;
+
+	@Schema(description = "Status of the incident", example = "KLART")
 	private Integer statusId;
+
+	@Schema(description = "Status text", example = "Klart")
 	private String statusText;
 
 }
