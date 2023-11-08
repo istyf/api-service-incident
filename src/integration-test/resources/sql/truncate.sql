@@ -1,0 +1,6 @@
+SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE category;
+TRUNCATE TABLE incident;
+TRUNCATE TABLE attachment;
+TRUNCATE TABLE incident_attachments;
+SET FOREIGN_KEY_CHECKS = 1;

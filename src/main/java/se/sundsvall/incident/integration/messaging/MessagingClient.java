@@ -1,18 +1,30 @@
 package se.sundsvall.incident.integration.messaging;
 
-import generated.se.sundsvall.messaging.EmailRequest;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static se.sundsvall.incident.integration.messaging.configuration.MessagingConfiguration.REGISTRATION_ID;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import static se.sundsvall.incident.integration.messaging.MessagingIntegration.INTEGRATION_NAME;
+import se.sundsvall.incident.integration.messaging.configuration.MessagingConfiguration;
+
+import generated.se.sundsvall.messaging.EmailRequest;
+import generated.se.sundsvall.messaging.MessageResult;
 
 @FeignClient(
-        name = INTEGRATION_NAME,
-        url = "${integration.messaging.client.url}",
-        configuration = MessagingClientConfiguration.class
+	name = REGISTRATION_ID,
+	url = "${integration.messaging.url}",
+	configuration = MessagingConfiguration.class
 )
-interface MessagingClient {
+public interface MessagingClient {
 
-    @PostMapping("/email")
-    void sendEmail(EmailRequest request);
+	/**
+	 * Send a single e-mail
+	 *
+	 * @param request containing email information
+	 * @return response containing id and delivery results for sent message
+	 */
+	@PostMapping(path = "/email", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	MessageResult sendEmail(@RequestBody final EmailRequest request);
 }

@@ -21,9 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.zalando.problem.Problem;
 
-import se.sundsvall.incident.api.model.CategoryDTO;
+import se.sundsvall.incident.api.model.Category;
 import se.sundsvall.incident.api.model.CategoryPatch;
 import se.sundsvall.incident.api.model.CategoryPost;
+import se.sundsvall.incident.api.model.ValidCategoryResponse;
+import se.sundsvall.incident.api.model.ValidOepCategoryResponse;
 import se.sundsvall.incident.service.CategoryService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -55,19 +57,18 @@ public class CategoryResource {
 			@ApiResponse(responseCode = "200", description = "All categories returned", useReturnTypeSchema = true),
 		})
 	@GetMapping(produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
-	public ResponseEntity<List<CategoryDTO>> getAllCategories() {
+	public ResponseEntity<List<Category>> getAllCategories() {
 		return ok(categoryService.fetchAllCategories());
 	}
 
 	@Operation(summary = "Fetch category by ID",
 		responses = {
-			@ApiResponse(responseCode = "200", description = "Category returned", useReturnTypeSchema = true,
-				content = @Content(mediaType = APPLICATION_JSON_VALUE)),
+			@ApiResponse(responseCode = "200", description = "Category returned", useReturnTypeSchema = true),
 			@ApiResponse(responseCode = "404", description = "Not found",
 				content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 		})
 	@GetMapping(path = "/{id}", produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
-	public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable("id") final Integer id) {
+	public ResponseEntity<Category> getCategoryById(@PathVariable("id") final Integer id) {
 		var category = categoryService.fetchCategoryById(id);
 		return ok(category);
 	}
@@ -89,13 +90,12 @@ public class CategoryResource {
 
 	@Operation(summary = "Update a category",
 		responses = {
-			@ApiResponse(responseCode = "200", description = "Category was updated", useReturnTypeSchema = true,
-				content = @Content(mediaType = APPLICATION_JSON_VALUE)),
+			@ApiResponse(responseCode = "200", description = "Category was updated", useReturnTypeSchema = true),
 			@ApiResponse(responseCode = "404", description = "Not found",
 				content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 		})
 	@PatchMapping(path = "/{id}", produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE}, consumes = APPLICATION_JSON_VALUE)
-	public ResponseEntity<CategoryDTO> patchCategory(
+	public ResponseEntity<Category> patchCategory(
 		@PathVariable("id") final Integer id,
 		@RequestBody @Valid final CategoryPatch patch) {
 		return ok(categoryService.patchCategory(id, patch));
@@ -111,6 +111,22 @@ public class CategoryResource {
 	public ResponseEntity<Void> deleteCategoryById(@PathVariable("id") final Integer id) {
 		categoryService.deleteCategoryById(id);
 		return noContent().build();
+	}
+
+	@Operation(summary = "Get a list of valid categories")
+	@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
+	@GetMapping(path = "/valid", produces = {APPLICATION_PROBLEM_JSON_VALUE, APPLICATION_JSON_VALUE})
+	public ResponseEntity<List<ValidCategoryResponse>> getValidCategories() {
+		var validCategories = categoryService.fetchValidCategories();
+		return ok(validCategories);
+	}
+
+	@Operation(summary = "Get a list of valid categories in oep format")
+	@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
+	@GetMapping(path = "/valid/oep", produces = {APPLICATION_PROBLEM_JSON_VALUE, APPLICATION_JSON_VALUE})
+	public ResponseEntity<List<ValidOepCategoryResponse>> getValidOepCategories() {
+		var validOepCategories = categoryService.fetchValidOepCategories();
+		return ok(validOepCategories);
 	}
 
 }

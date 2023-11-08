@@ -1,6 +1,12 @@
 package se.sundsvall.incident.api;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
+import static org.springframework.http.ResponseEntity.ok;
+
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import jakarta.validation.Valid;
 
@@ -14,25 +20,31 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
 
-import se.sundsvall.incident.api.model.AttachmentResponse;
-import se.sundsvall.incident.api.model.IncidentListResponse;
 import se.sundsvall.incident.api.model.IncidentOepResponse;
 import se.sundsvall.incident.api.model.IncidentResponse;
 import se.sundsvall.incident.api.model.IncidentSaveRequest;
 import se.sundsvall.incident.api.model.IncidentSaveResponse;
+import se.sundsvall.incident.api.model.ValidStatusResponse;
+import se.sundsvall.incident.integration.db.entity.enums.Status;
 import se.sundsvall.incident.service.IncidentService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "Incident resources")
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/incident")
+@Tag(name = "Incident resources")
+@ApiResponses(value = {
+	@ApiResponse(responseCode = "400", description = "Bad Request",
+		content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class))),
+	@ApiResponse(responseCode = "500", description = "Internal Server Error",
+		content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+})
 public class IncidentResource {
 
 	private final IncidentService incidentService;
@@ -41,165 +53,94 @@ public class IncidentResource {
 		this.incidentService = incidentService;
 	}
 
-	@Operation(summary = "Get status for a OeP incident")
-	@ApiResponse(
-		responseCode = "200",
-		description = "Successful Operation",
-		content = @Content(schema = @Schema(implementation = IncidentOepResponse.class)))
-	@ApiResponse(
-		responseCode = "400",
-		description = "Bad Request",
-		content = @Content(schema = @Schema(implementation = Problem.class)))
-	@ApiResponse(
-		responseCode = "404",
-		description = "Not Found",
-		content = @Content(schema = @Schema(implementation = Problem.class)))
-	@ApiResponse(
-		responseCode = "500",
-		description = "Internal Server Error",
-		content = @Content(schema = @Schema(implementation = Problem.class)))
-	@GetMapping("/internal/oep/status/{externalCaseId}")
-	ResponseEntity<IncidentOepResponse> getStatusForOeP(@PathVariable(name = "externalCaseId") String externalCaseId) {
-		return incidentService.getOepIncidentStatus(externalCaseId)
-			.map(oepIncidentDto -> IncidentOepResponse.builder()
-				.withIncidentId(oepIncidentDto.getIncidentId())
-				.withStatusId(oepIncidentDto.getStatusId())
-				.withStatusText(oepIncidentDto.getStatusText())
-				.withExternalCaseId(oepIncidentDto.getExternalCaseId())
-				.build())
-			.map(ResponseEntity::ok)
-			.orElseThrow(() -> Problem.valueOf(Status.NOT_FOUND));
+	@Operation(summary = "Get list of incidents",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
+		})
+	@GetMapping(produces = {APPLICATION_PROBLEM_JSON_VALUE, APPLICATION_JSON_VALUE})
+	ResponseEntity<List<IncidentResponse>> fetchAllIncidents(
+		@RequestParam(required = false) final Optional<Integer> pageNumber,
+		@RequestParam(required = false) final Optional<Integer> pageSize) {
+		var incidents = incidentService.fetchPaginatedIncidents(pageNumber, pageSize);
+		return ok(incidents);
 	}
 
-	@Operation(summary = "Send a single Incident")
-	@ApiResponse(
-		responseCode = "200",
-		description = "Successful Operation",
-		content = @Content(schema = @Schema(implementation = IncidentSaveResponse.class)))
-	@ApiResponse(
-		responseCode = "400",
-		description = "Bad Request",
-		content = @Content(schema = @Schema(implementation = Problem.class)))
-	@ApiResponse(
-		responseCode = "500",
-		description = "Internal Server Error",
-		content = @Content(schema = @Schema(implementation = Problem.class)))
-	@PostMapping("/sendincident")
-	ResponseEntity<IncidentSaveResponse> sendIncident(@Valid @RequestBody IncidentSaveRequest incidentSaveRequest) {
-		final var incident = incidentService.sendIncident(incidentSaveRequest);
-		return ResponseEntity.ok(IncidentSaveResponse.builder()
-			.withIncidentId(incident.getIncidentId())
-			.withStatus("OK")
-			.build());
+	@Operation(summary = "Get a incident by id",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true),
+			@ApiResponse(responseCode = "404", description = "Not Found",
+				content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+		})
+	@GetMapping(path = "/{id}", produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	ResponseEntity<IncidentResponse> fetchIncidentById(@PathVariable("id") final String id) {
+		var incident = incidentService.fetchIncidentById(id);
+		return ok(incident);
 	}
 
-	@Operation(summary = "Get a single incident")
-	@ApiResponse(
-		responseCode = "200",
-		description = "Successful Operation",
-		content = @Content(schema = @Schema(implementation = IncidentResponse.class)))
-	@ApiResponse(
-		responseCode = "400",
-		description = "Bad Request",
-		content = @Content(schema = @Schema(implementation = Problem.class)))
-	@ApiResponse(
-		responseCode = "404",
-		description = "Not Found",
-		content = @Content(schema = @Schema(implementation = Problem.class)))
-	@ApiResponse(
-		responseCode = "500",
-		description = "Internal Server Error",
-		content = @Content(schema = @Schema(implementation = Problem.class)))
-	@GetMapping("/getincident/{id}")
-	ResponseEntity<IncidentResponse> getIncident(@PathVariable(name = "id") String incidentId) {
-		return incidentService.getIncident(incidentId)
-			.map(incidentDto -> IncidentResponse.builder()
-				.withIncidentId(incidentId)
-				.withExternalCaseId(incidentDto.getExternalCaseId())
-				.withPersonId(incidentDto.getPersonId())
-				.withCreated(String.valueOf(incidentDto.getCreated()))
-				.withUpdated(String.valueOf(incidentDto.getUpdated()))
-				.withPhoneNumber(incidentDto.getPhoneNumber())
-				.withEmail(incidentDto.getEmail())
-				.withContactMethod(incidentDto.getContactMethod())
-				.withCategory(incidentDto.getCategory())
-				.withDescription(incidentDto.getDescription())
-				.withStatus(incidentDto.getStatusText())
-				.withAttachments(incidentDto.getAttachments().stream()
-					.map(attachmentDto -> AttachmentResponse.builder()
-						.withName(attachmentDto.getName())
-						.withMimeType(attachmentDto.getMimeType())
-						.withNote(attachmentDto.getNote())
-						.withExtension(attachmentDto.getExtension())
-						.withFile(attachmentDto.getFile())
-						.withCategory(attachmentDto.getCategory())
-						.withIncidentId(incidentId).build())
-					.toList())
-				.build())
-			.map(ResponseEntity::ok)
-			.orElseThrow(() -> Problem.valueOf(Status.NOT_FOUND));
-
+	@Operation(summary = "Get status for a OeP incident",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true),
+			@ApiResponse(responseCode = "404", description = "Not Found",
+				content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+		})
+	@GetMapping(path = "/internal/oep/{externalCaseId}/status")
+	ResponseEntity<IncidentOepResponse> getStatusForOeP(
+		@PathVariable("externalCaseId") final String externalCaseId) {
+		var response = incidentService.fetchOepIncidentStatus(externalCaseId);
+		return ok(response);
 	}
 
-	@Operation(summary = "Get list of incidents")
+	@Operation(summary = "Get a list of valid statuses")
 	@ApiResponse(
-		responseCode = "200",
-		description = "Successful Operation",
-		content = @Content(schema = @Schema(implementation = IncidentListResponse.class)))
-	@ApiResponse(
-		responseCode = "400",
-		description = "Bad Request",
-		content = @Content(schema = @Schema(implementation = Problem.class)))
-	@ApiResponse(
-		responseCode = "500",
-		description = "Internal Server Error",
-		content = @Content(schema = @Schema(implementation = Problem.class)))
-	@GetMapping("/listincidents")
-	ResponseEntity<List<IncidentListResponse>> getAllIncidents(@RequestParam(required = false) int offset, @RequestParam(required = false) int limit) {
-		return ResponseEntity.ok(incidentService.getIncidents(offset, limit).stream()
-			.map(dto -> IncidentListResponse.builder()
-				.withIncidentId(dto.getIncidentId())
-				.withExternalCaseId(dto.getExternalCaseId())
-				.withStatus(dto.getStatusText())
-				.build())
+		responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
+	@GetMapping(value = "/statuses", produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE})
+	public ResponseEntity<List<ValidStatusResponse>> getValidIncidentStatuses() {
+		return ok(Arrays.stream(Status.values())
+			.map(dto -> ValidStatusResponse.builder()
+				.withStatus(dto.getLabel())
+				.withStatusId(dto.getValue()).build())
 			.toList());
 	}
 
-	@Operation(summary = "Update the status for a specific incident")
-	@ApiResponse(
-		responseCode = "200",
-		description = "Successful Operation",
-		content = @Content(schema = @Schema()))
-	@ApiResponse(
-		responseCode = "400",
-		description = "Bad Request",
-		content = @Content(schema = @Schema(implementation = Problem.class)))
-	@ApiResponse(
-		responseCode = "500",
-		description = "Internal Server Error",
-		content = @Content(schema = @Schema(implementation = Problem.class)))
-	@PatchMapping("/statusupdate")
-	ResponseEntity<Void> updateIncidentStatus(@RequestParam(name = "id") String incidentId, @RequestParam(name = "status") Integer statusid) {
-		incidentService.updateIncidentStatus(incidentId, statusid);
-		return ResponseEntity.ok().build();
+	@Operation(summary = "Create a incident and send notification",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
+		})
+	@PostMapping(produces = {APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE}, consumes = APPLICATION_JSON_VALUE)
+	ResponseEntity<IncidentSaveResponse> createIncident(@RequestBody @Valid final IncidentSaveRequest incidentSaveRequest) {
+		var incident = incidentService.createIncident(incidentSaveRequest);
+		return ok(incident);
 	}
 
-	@Operation(summary = "Set type of errand")
-	@ApiResponse(
-		responseCode = "200",
-		description = "Successful Operation",
-		content = @Content(schema = @Schema()))
-	@ApiResponse(
-		responseCode = "400",
-		description = "Bad Request",
-		content = @Content(schema = @Schema(implementation = Problem.class)))
-	@ApiResponse(
-		responseCode = "500",
-		description = "Internal Server Error",
-		content = @Content(schema = @Schema(implementation = Problem.class)))
-	@GetMapping("/setincidentfeedback")
-	ResponseEntity<Void> setIncidentFeedback(@RequestParam(name = "errandid") String incidentId, @RequestParam(name = "feedback") String feedback) {
-		incidentService.updateIncidentFeedback(incidentId, feedback);
-		return ResponseEntity.ok().build();
+	@Operation(summary = "Update the status for a specific incident",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true),
+			@ApiResponse(responseCode = "404", description = "Not Found",
+				content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+		})
+	@PatchMapping(path = "/status", produces = APPLICATION_PROBLEM_JSON_VALUE)
+	ResponseEntity<Void> patchStatus(
+		@RequestParam(name = "id") final String incidentId,
+		@RequestParam(name = "status") final Integer statusId) {
+		incidentService.updateIncidentStatus(incidentId, statusId);
+		return ok().build();
 	}
+
+	@Operation(summary = "Set incident feedback",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true),
+			@ApiResponse(responseCode = "404", description = "Not Found",
+				content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+		})
+	@PatchMapping(path = "/feedback", produces = APPLICATION_PROBLEM_JSON_VALUE)
+	ResponseEntity<Void> patchFeedback(
+		@RequestParam(name = "id") final String incidentId,
+		@RequestParam(name = "feedback") final String feedback) {
+		incidentService.updateIncidentFeedback(incidentId, feedback);
+		return ok().build();
+	}
+
 }
+
+
+

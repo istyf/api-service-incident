@@ -31,7 +31,6 @@ class CategoryPatchValidationTest {
 		assertThat(constraints).isEmpty();
 	}
 
-
 	@Test
 	void invalidEmailTest() {
 		var categoryPatch = new CategoryPatch(null, null, "invalid email");

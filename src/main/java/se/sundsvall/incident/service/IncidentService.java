@@ -1,8 +1,11 @@
 package se.sundsvall.incident.service;
 
-import static se.sundsvall.incident.service.mapper.Mapper.toEntity;
-import static se.sundsvall.incident.service.mapper.Mapper.toIncidentDto;
+import static org.zalando.problem.Status.NOT_FOUND;
+import static se.sundsvall.incident.service.mapper.Mapper.toIncidentEntity;
+import static se.sundsvall.incident.service.mapper.Mapper.toIncidentOepResponse;
+import static se.sundsvall.incident.service.mapper.Mapper.toIncidentResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,96 +13,136 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.zalando.problem.Problem;
 
+import se.sundsvall.incident.api.model.IncidentOepResponse;
+import se.sundsvall.incident.api.model.IncidentResponse;
 import se.sundsvall.incident.api.model.IncidentSaveRequest;
-import se.sundsvall.incident.dto.IncidentDto;
-import se.sundsvall.incident.dto.Status;
-import se.sundsvall.incident.integration.db.AttachmentRepository;
-import se.sundsvall.incident.integration.db.IncidentRepository;
-import se.sundsvall.incident.integration.db.entity.AttachmentEntity;
+import se.sundsvall.incident.api.model.IncidentSaveResponse;
 import se.sundsvall.incident.integration.db.entity.IncidentEntity;
+import se.sundsvall.incident.integration.db.entity.enums.Status;
+import se.sundsvall.incident.integration.db.repository.CategoryRepository;
+import se.sundsvall.incident.integration.db.repository.IncidentRepository;
 import se.sundsvall.incident.integration.lifebuoy.LifeBuoyIntegration;
 import se.sundsvall.incident.integration.messaging.MessagingIntegration;
 import se.sundsvall.incident.service.mapper.Mapper;
 
+import generated.se.sundsvall.messaging.MessageResult;
+import generated.se.sundsvall.messaging.MessageStatus;
+
 @Service
 public class IncidentService {
+
+	private static final String ENTITY_NOT_FOUND = "%s with id: %s not found";
+	private static final String CATEGORY = "Category";
+	private static final String INCIDENT = "Incident";
 
 	private static final Logger log = LoggerFactory.getLogger(IncidentService.class);
 	private final LifeBuoyIntegration lifeBuoyIntegration;
 	private final MessagingIntegration messagingIntegration;
-	private final IncidentRepository incidentRepository;
-	private final AttachmentRepository attachmentRepository;
 
-	public IncidentService(final IncidentRepository incidentRepository,
-		final LifeBuoyIntegration lifeBuoyIntegration,
+	private final IncidentRepository incidentRepository;
+	private final CategoryRepository categoryRepository;
+
+
+	public IncidentService(final LifeBuoyIntegration lifeBuoyIntegration,
 		final MessagingIntegration messagingIntegration,
-		final AttachmentRepository attachmentRepository) {
-		this.incidentRepository = incidentRepository;
+		final IncidentRepository incidentRepository,
+		final CategoryRepository categoryRepository) {
 		this.lifeBuoyIntegration = lifeBuoyIntegration;
 		this.messagingIntegration = messagingIntegration;
-		this.attachmentRepository = attachmentRepository;
+		this.incidentRepository = incidentRepository;
+		this.categoryRepository = categoryRepository;
 	}
 
-	public Optional<IncidentDto> getOepIncidentStatus(final String externalCaseId) {
-		return incidentRepository.findIncidentEntityByExternalCaseId(externalCaseId).map(Mapper::toIncidentDto);
+	public IncidentResponse fetchIncidentById(final String id) {
+		var incident = incidentRepository.findById(id)
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ENTITY_NOT_FOUND.formatted(INCIDENT, id)));
+		return toIncidentResponse(incident);
 	}
 
-	public IncidentDto sendIncident(final IncidentSaveRequest request) {
-		final var entity = toEntity(request);
+	public IncidentOepResponse fetchOepIncidentStatus(final String externalCaseId) {
+		var incident = incidentRepository.findIncidentEntityByExternalCaseId(externalCaseId)
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ENTITY_NOT_FOUND.formatted(INCIDENT, externalCaseId)));
+		return toIncidentOepResponse(incident);
+	}
 
-		final List<AttachmentEntity> attachmentList = Optional.ofNullable(request.getAttachments()).orElse(List.of())
-			.stream()
-			.map(e -> toEntity(e, entity.getIncidentId()))
+	public List<IncidentResponse> fetchPaginatedIncidents(final Optional<Integer> pageNumber,
+		final Optional<Integer> pageSize) {
+		var incidents = incidentRepository.findAll(
+			PageRequest.of(pageNumber.orElse(0), pageSize.orElse(100)));
+
+		return incidents.stream()
+			.map(Mapper::toIncidentResponse)
 			.toList();
+	}
 
-		try {
-			switch (entity.getCategory()) {
-				case LIVBAT, LIVBOJ ->
-					entity.setExternalCaseId(lifeBuoyIntegration.sendLifeBuoy(toIncidentDto(entity)));
-				case VATTENMATARE -> messagingIntegration.sendMSVAEmail(toIncidentDto(entity));
-				default -> messagingIntegration.sendEmail(toIncidentDto(entity, attachmentList));
-			}
-		} catch (final Exception e) {
-			entity.setStatus(Status.ERROR);
+	@Transactional
+	public IncidentSaveResponse createIncident(final IncidentSaveRequest request) {
+		var category = categoryRepository.findById(request.getCategory())
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ENTITY_NOT_FOUND.formatted(CATEGORY, request.getCategory())));
+		var attachments = Optional.ofNullable(request.getAttachments())
+			.map(list -> list.stream()
+				.map(Mapper::toAttachmentEntity)
+				.toList())
+			.orElseGet(ArrayList::new);
 
-			log.warn("Unable to send email for new incident with incidentId: {}, Exception was: {}", entity.getIncidentId(), e);
-		}
-		incidentRepository.save(entity);
-		attachmentRepository.saveAll(attachmentList);
+		var incident = toIncidentEntity(request, category, attachments);
 
-		return IncidentDto.builder()
-			.withIncidentId(entity.getIncidentId())
-			.withStatusText(entity.getStatus().getLabel())
+		sendNotification(incident);
+
+		return IncidentSaveResponse.builder()
+			.withIncidentId(incident.getIncidentId())
+			.withStatus(String.valueOf(incident.getStatus()))
 			.build();
 	}
 
-	public Optional<IncidentDto> getIncident(final String incidentId) {
-		return incidentRepository.findById(incidentId)
-			.map((IncidentEntity incidentEntity) -> toIncidentDto(incidentEntity, attachmentRepository.findAllByIncidentId(incidentId)));
-	}
-
+	@Transactional
 	public void updateIncidentStatus(final String incidentId, final Integer statusId) {
-		incidentRepository.findById(incidentId)
-			.ifPresent(entity -> {
-				entity.setStatus(Status.forValue(statusId));
-				incidentRepository.save(entity);
-			});
+		var incident = incidentRepository.findById(incidentId)
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ENTITY_NOT_FOUND.formatted(INCIDENT, incidentId)));
+		incident.setStatus(Status.forValue(statusId));
+		incidentRepository.save(incident);
 	}
 
-	public List<IncidentDto> getIncidents(final int offset, final int limit) {
-		return incidentRepository.findAll(PageRequest.of(offset, limit))
-			.stream()
-			.map((IncidentEntity incidentEntity) -> toIncidentDto(incidentEntity, attachmentRepository.findAllByIncidentId(incidentEntity.getIncidentId())))
-			.toList();
-	}
-
+	@Transactional
 	public void updateIncidentFeedback(final String incidentId, final String feedback) {
-		incidentRepository.findById(incidentId)
-			.ifPresent(entity -> {
-				entity.setFeedback(feedback);
-				incidentRepository.save(entity);
-			});
+		var incident = incidentRepository.findById(incidentId)
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ENTITY_NOT_FOUND.formatted(INCIDENT, incidentId)));
+		incident.setFeedback(feedback);
+		incidentRepository.save(incident);
 	}
 
+	public void sendNotification(final IncidentEntity incident) {
+		try {
+			switch (incident.getCategory().getTitle()) {
+				case "LIVBAT", "LIVBOJ" -> {
+					incident.setExternalCaseId(lifeBuoyIntegration.sendLifeBuoy(incident));
+					incident.setStatus(Status.INSKICKAT);
+				}
+				case "VATTENMATARE", "BRADD_OVERVAKNINGS_LARM" ->
+					setIncidentStatus(incident, messagingIntegration.sendMSVAEmail(incident));
+				default -> setIncidentStatus(incident, messagingIntegration.sendEmail(incident));
+
+			}
+		} catch (Exception e) {
+			log.warn("Unable to send email for new incident with incidentId: {}, Exception was: {}", incident.getIncidentId(), e.getMessage());
+			incident.setStatus(Status.ERROR);
+		}
+		incidentRepository.save(incident);
+	}
+
+	private void setIncidentStatus(final IncidentEntity incident, final Optional<MessageResult> messageResult) {
+		messageResult.ifPresentOrElse(
+			result -> {
+				final var deliveryStatus = result.getDeliveries().get(0).getStatus();
+				if (deliveryStatus == MessageStatus.SENT || deliveryStatus == MessageStatus.PENDING) {
+					incident.setStatus(Status.INSKICKAT);
+				} else {
+					incident.setStatus(Status.ERROR);
+				}
+			},
+			() -> incident.setStatus(Status.ERROR));
+	}
 }

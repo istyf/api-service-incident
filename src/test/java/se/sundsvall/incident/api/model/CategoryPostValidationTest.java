@@ -24,7 +24,7 @@ class CategoryPostValidationTest {
 
 	@Test
 	void validFieldsTest() {
-		var categoryPost = new CategoryPost("valid title", "valid label", "valid@email.com");
+		var categoryPost = new CategoryPost("valid title", "valid label", "valid@email.com", "valid subject");
 
 		var constraints = List.copyOf(validator.validate(categoryPost));
 
@@ -33,7 +33,7 @@ class CategoryPostValidationTest {
 
 	@Test
 	void invalidTitleTest() {
-		var categoryPost = new CategoryPost("", "valid label", "valid@email.com");
+		var categoryPost = new CategoryPost("", "valid label", "valid@email.com", "valid subject");
 
 		var constraints = List.copyOf(validator.validate(categoryPost));
 
@@ -46,7 +46,7 @@ class CategoryPostValidationTest {
 
 	@Test
 	void invalidLabelTest() {
-		var categoryPost = new CategoryPost("valid title", "", "valid@email.com");
+		var categoryPost = new CategoryPost("valid title", "", "valid@email.com", "valid subject");
 
 		var constraints = List.copyOf(validator.validate(categoryPost));
 
@@ -59,7 +59,7 @@ class CategoryPostValidationTest {
 
 	@Test
 	void blankEmailTest() {
-		var categoryPost = new CategoryPost("valid title", "valid label", "");
+		var categoryPost = new CategoryPost("valid title", "valid label", "", "valid subject");
 
 		var constraints = List.copyOf(validator.validate(categoryPost));
 
@@ -72,7 +72,7 @@ class CategoryPostValidationTest {
 
 	@Test
 	void invalidEmailTest() {
-		var categoryPost = new CategoryPost("valid title", "valid label", "invalid email");
+		var categoryPost = new CategoryPost("valid title", "valid label", "invalid email", "valid subject");
 
 		var constraints = List.copyOf(validator.validate(categoryPost));
 

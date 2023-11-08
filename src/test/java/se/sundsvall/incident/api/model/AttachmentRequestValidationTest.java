@@ -1,24 +1,26 @@
 package se.sundsvall.incident.api.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static se.sundsvall.incident.TestDataFactory.buildAttachmentRequest;
+import static se.sundsvall.incident.TestDataFactory.createAttachmentRequest;
 
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import se.sundsvall.incident.TestDataFactory;
+
 class AttachmentRequestValidationTest extends AbstractValidationTest {
 
 	@Test
 	void testValidationWithValidValues() {
-		final var request = buildAttachmentRequest();
+		final var request = createAttachmentRequest();
 
 		assertThat(validator.validate(request)).isEmpty();
 	}
 
 	@Test
 	void testValidationWithInvalidCategory() {
-		final var request = buildAttachmentRequest(req -> req.setCategory(null));
+		final var request = TestDataFactory.createAttachmentRequest(req -> req.setCategory(null));
 
 		final var constraints = List.copyOf(validator.validate(request));
 		assertThat(constraints).hasSize(1);
@@ -30,7 +32,7 @@ class AttachmentRequestValidationTest extends AbstractValidationTest {
 
 	@Test
 	void testValidationWithInvalidExtension() {
-		final var request = buildAttachmentRequest(req -> req.setExtension(null));
+		final var request = TestDataFactory.createAttachmentRequest(req -> req.setExtension(null));
 
 		final var constraints = List.copyOf(validator.validate(request));
 		assertThat(constraints).hasSize(1);
@@ -42,7 +44,7 @@ class AttachmentRequestValidationTest extends AbstractValidationTest {
 
 	@Test
 	void testValidationWithInvalidMimeType() {
-		final var request = buildAttachmentRequest(req -> req.setMimeType(null));
+		final var request = TestDataFactory.createAttachmentRequest(req -> req.setMimeType(null));
 
 		final var constraints = List.copyOf(validator.validate(request));
 		assertThat(constraints).hasSize(1);
@@ -54,7 +56,7 @@ class AttachmentRequestValidationTest extends AbstractValidationTest {
 
 	@Test
 	void testValidationWithInvalidFile() {
-		final var request = buildAttachmentRequest(req -> req.setFile(null));
+		final var request = TestDataFactory.createAttachmentRequest(req -> req.setFile(null));
 
 		final var constraints = List.copyOf(validator.validate(request));
 		assertThat(constraints).hasSize(1);
