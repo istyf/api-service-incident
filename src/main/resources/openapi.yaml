@@ -5,7 +5,7 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "2.0"
+  version: "3.0"
 servers:
 - url: http://localhost:8080
   description: Generated server url
@@ -43,14 +43,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/IncidentResponse'
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
@@ -76,14 +76,14 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/IncidentSaveResponse'
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
@@ -108,14 +108,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Category'
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
@@ -134,27 +134,27 @@ paths:
       responses:
         "201":
           description: Category created
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "500":
           description: Internal Server Error
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-  /incident/status:
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+  /incident/status/{incidentId}:
     patch:
       tags:
       - Incident resources
       summary: Update the status for a specific incident
       operationId: patchStatus
       parameters:
-      - name: id
-        in: query
+      - name: incidentId
+        in: path
         required: true
         schema:
           type: string
@@ -173,27 +173,27 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "500":
           description: Internal Server Error
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-  /incident/feedback:
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+  /incident/feedback/{incidentId}:
     patch:
       tags:
       - Incident resources
       summary: Set incident feedback
       operationId: patchFeedback
       parameters:
-      - name: id
-        in: query
+      - name: incidentId
+        in: path
         required: true
         schema:
           type: string
@@ -211,14 +211,14 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
@@ -252,14 +252,14 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
@@ -285,14 +285,14 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
@@ -331,14 +331,14 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
@@ -371,14 +371,14 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
@@ -390,6 +390,12 @@ paths:
       summary: Get a list of valid statuses
       operationId: getValidIncidentStatuses
       responses:
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad Request
           content:
@@ -409,12 +415,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ValidStatusResponse'
-        "500":
-          description: Internal Server Error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
   /incident/internal/oep/{externalCaseId}/status:
     get:
       tags:
@@ -440,14 +440,14 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
@@ -459,6 +459,12 @@ paths:
       summary: Get a list of valid categories
       operationId: getValidCategories
       responses:
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad Request
           content:
@@ -478,12 +484,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ValidCategoryResponse'
-        "500":
-          description: Internal Server Error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
   /category/valid/oep:
     get:
       tags:
@@ -491,6 +491,12 @@ paths:
       summary: Get a list of valid categories in oep format
       operationId: getValidOepCategories
       responses:
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         "400":
           description: Bad Request
           content:
@@ -510,12 +516,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ValidOepCategoryResponse'
-        "500":
-          description: Internal Server Error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
   /api-docs:
     get:
       tags:
@@ -623,9 +623,9 @@ components:
             type: object
         status:
           $ref: '#/components/schemas/StatusType'
-        title:
-          type: string
         detail:
+          type: string
+        title:
           type: string
     StatusType:
       type: object

@@ -8,13 +8,13 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component;
 
 import se.sundsvall.incident.integration.db.entity.IncidentEntity;
+import se.sundsvall.incident.integration.lifebuoy.configuration.LifeBuoyProperties;
 import se.sundsvall.incident.integration.lifebuoy.model.LifeBuoyRequestWrapper;
 import se.sundsvall.incident.integration.lifebuoy.model.LifebuoyRequest;
 
 @Component
 @EnableConfigurationProperties(LifeBuoyProperties.class)
 class LifeBuoyMapper {
-
 
 	private final ObjectMapper objectMapper;
 	private final LifeBuoyProperties properties;
@@ -26,7 +26,7 @@ class LifeBuoyMapper {
 
 	LifeBuoyRequestWrapper toLifeBuoyRequest(IncidentEntity incident) throws JsonProcessingException {
 		return LifeBuoyRequestWrapper.builder()
-			.withApiKey(properties.getApikey())
+			.withApiKey(properties.apiKey())
 			.withErrandJsonString(objectMapper.writeValueAsString(LifebuoyRequest.builder()
 				.withValue(LifebuoyRequest.TypeAndValue.Type.Property, "source", incident.getIncidentId())
 				.withValue(LifebuoyRequest.TypeAndValue.Type.Property, "personalnumber", "NOT MAPPED")

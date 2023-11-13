@@ -1,6 +1,7 @@
 config:
   datasource:
-    url: http://nowhere.com
+    url: jdbc:tc:mariadb:10.6.14:///
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
     username: override
     password: override
   jpa:
@@ -21,4 +22,25 @@ config:
       apikey: override
       url: http://nowhere.com
 
+#########################
+###-Schema Generation-###
+#########################
+spring:
+  jpa:
+    properties:
+      jakarta:
+        persistence:
+          schema-generation:
+            database:
+              action: update
+            scripts:
+              action: create
+              create-target: target/database/generated-schema.sql
+            create-source: metadata
+      hibernate:
+        hbm2ddl:
+          schema-generation:
+            script:
+              append: false
+        format_sql: true
 
