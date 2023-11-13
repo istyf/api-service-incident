@@ -50,6 +50,6 @@ integration:
     read-timeout: 60
   lifebuoy:
     url: ${config.integration.lifebuoy.url}
-    apikey: ${config.integration.lifebuoy.apikey}
+    api-key: ${config.integration.lifebuoy.apikey}
     read-timeout: 60
     connect-timeout: 5

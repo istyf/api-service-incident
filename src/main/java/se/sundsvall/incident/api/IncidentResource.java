@@ -118,10 +118,10 @@ public class IncidentResource {
 			@ApiResponse(responseCode = "404", description = "Not Found",
 				content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 		})
-	@PatchMapping(path = "/status", produces = APPLICATION_PROBLEM_JSON_VALUE)
+	@PatchMapping(path = "/status/{incidentId}", produces = APPLICATION_PROBLEM_JSON_VALUE)
 	ResponseEntity<Void> patchStatus(
-		@RequestParam(name = "id") final String incidentId,
-		@RequestParam(name = "status") final Integer statusId) {
+		@PathVariable("incidentId") final String incidentId,
+		@RequestParam("status") final Integer statusId) {
 		incidentService.updateIncidentStatus(incidentId, statusId);
 		return ok().build();
 	}
@@ -132,10 +132,10 @@ public class IncidentResource {
 			@ApiResponse(responseCode = "404", description = "Not Found",
 				content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 		})
-	@PatchMapping(path = "/feedback", produces = APPLICATION_PROBLEM_JSON_VALUE)
+	@PatchMapping(path = "/feedback/{incidentId}", produces = APPLICATION_PROBLEM_JSON_VALUE)
 	ResponseEntity<Void> patchFeedback(
-		@RequestParam(name = "id") final String incidentId,
-		@RequestParam(name = "feedback") final String feedback) {
+		@PathVariable("incidentId") final String incidentId,
+		@RequestParam("feedback") final String feedback) {
 		incidentService.updateIncidentFeedback(incidentId, feedback);
 		return ok().build();
 	}

@@ -78,8 +78,7 @@ public class CategoryResource {
 			@ApiResponse(responseCode = "201", description = "Category created"),
 		})
 	@PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_PROBLEM_JSON_VALUE)
-	public ResponseEntity<Void> postCategory(
-		@RequestBody @Valid final CategoryPost categoryPost) {
+	public ResponseEntity<Void> postCategory(@RequestBody @Valid final CategoryPost categoryPost) {
 		var createdCategory = categoryService.createCategory(categoryPost);
 		return ResponseEntity
 			.created(UriComponentsBuilder.fromPath("category/{id}")
