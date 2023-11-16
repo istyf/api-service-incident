@@ -1,6 +1,6 @@
 spring:
   application:
-    name: incident-api
+    name: api-incident
   datasource:
     url: ${config.datasource.url}
     username: ${config.datasource.username}
@@ -29,8 +29,8 @@ spring:
             client-id: ${config.integration.messaging.client-id}
             client-secret: ${config.integration.messaging.client-secret}
 openapi:
-  title: incident-api
-  name: incident-api
+  title: ${spring.application.name}
+  name: ${spring.application.name}
   version: '@project.version@'
 integration:
   messaging:
