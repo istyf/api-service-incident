@@ -1,34 +1,34 @@
 openapi: 3.0.1
 info:
-  title: incident-api
-  contact: {}
+  title: api-incident
+  contact: { }
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
   version: "3.0"
 servers:
-- url: http://localhost:8080
-  description: Generated server url
+  - url: http://localhost:8080
+    description: Generated server url
 paths:
   /incident:
     get:
       tags:
-      - Incident resources
+        - Incident resources
       summary: Get list of incidents
       operationId: fetchAllIncidents
       parameters:
-      - name: pageNumber
-        in: query
-        required: false
-        schema:
-          type: integer
-          format: int32
-      - name: pageSize
-        in: query
-        required: false
-        schema:
-          type: integer
-          format: int32
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: Successful Operation
@@ -57,7 +57,7 @@ paths:
                 $ref: '#/components/schemas/Problem'
     post:
       tags:
-      - Incident resources
+        - Incident resources
       summary: Create a incident and send notification
       operationId: createIncident
       requestBody:
@@ -91,7 +91,7 @@ paths:
   /category:
     get:
       tags:
-      - Category resources
+        - Category resources
       summary: Fetch all categories
       operationId: getAllCategories
       responses:
@@ -122,7 +122,7 @@ paths:
                 $ref: '#/components/schemas/Problem'
     post:
       tags:
-      - Category resources
+        - Category resources
       summary: Create category
       operationId: postCategory
       requestBody:
@@ -149,21 +149,21 @@ paths:
   /incident/status/{incidentId}:
     patch:
       tags:
-      - Incident resources
+        - Incident resources
       summary: Update the status for a specific incident
       operationId: patchStatus
       parameters:
-      - name: incidentId
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: status
-        in: query
-        required: true
-        schema:
-          type: integer
-          format: int32
+        - name: incidentId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: status
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: Successful Operation
@@ -188,20 +188,20 @@ paths:
   /incident/feedback/{incidentId}:
     patch:
       tags:
-      - Incident resources
+        - Incident resources
       summary: Set incident feedback
       operationId: patchFeedback
       parameters:
-      - name: incidentId
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: feedback
-        in: query
-        required: true
-        schema:
-          type: string
+        - name: incidentId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: feedback
+          in: query
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Successful Operation
@@ -226,16 +226,16 @@ paths:
   /category/{id}:
     get:
       tags:
-      - Category resources
+        - Category resources
       summary: Fetch category by ID
       operationId: getCategoryById
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int32
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: Category returned
@@ -266,16 +266,16 @@ paths:
                 $ref: '#/components/schemas/Problem'
     delete:
       tags:
-      - Category resources
+        - Category resources
       summary: Delete a category by id
       operationId: deleteCategoryById
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int32
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
       responses:
         "204":
           description: Category deleted
@@ -299,16 +299,16 @@ paths:
                 $ref: '#/components/schemas/Problem'
     patch:
       tags:
-      - Category resources
+        - Category resources
       summary: Update a category
       operationId: patchCategory
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int32
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
       requestBody:
         content:
           application/json:
@@ -346,15 +346,15 @@ paths:
   /incident/{id}:
     get:
       tags:
-      - Incident resources
+        - Incident resources
       summary: Get a incident by id
       operationId: fetchIncidentById
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Successful Operation
@@ -386,7 +386,7 @@ paths:
   /incident/statuses:
     get:
       tags:
-      - Incident resources
+        - Incident resources
       summary: Get a list of valid statuses
       operationId: getValidIncidentStatuses
       responses:
@@ -418,15 +418,15 @@ paths:
   /incident/internal/oep/{externalCaseId}/status:
     get:
       tags:
-      - Incident resources
+        - Incident resources
       summary: Get status for a OeP incident
       operationId: getStatusForOeP
       parameters:
-      - name: externalCaseId
-        in: path
-        required: true
-        schema:
-          type: string
+        - name: externalCaseId
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Successful Operation
@@ -455,7 +455,7 @@ paths:
   /category/valid:
     get:
       tags:
-      - Category resources
+        - Category resources
       summary: Get a list of valid categories
       operationId: getValidCategories
       responses:
@@ -487,7 +487,7 @@ paths:
   /category/valid/oep:
     get:
       tags:
-      - Category resources
+        - Category resources
       summary: Get a list of valid categories in oep format
       operationId: getValidOepCategories
       responses:
@@ -519,7 +519,7 @@ paths:
   /api-docs:
     get:
       tags:
-      - API
+        - API
       summary: OpenAPI
       operationId: getApiDocs
       responses:
@@ -536,10 +536,10 @@ components:
   schemas:
     AttachmentRequest:
       required:
-      - category
-      - extension
-      - file
-      - mimeType
+        - category
+        - extension
+        - file
+        - mimeType
       type: object
       properties:
         category:
@@ -565,9 +565,9 @@ components:
       description: Attachments
     IncidentSaveRequest:
       required:
-      - category
-      - description
-      - personId
+        - category
+        - description
+        - personId
       type: object
       properties:
         personId:
@@ -648,10 +648,10 @@ components:
           example: 58f96da8-6d76-4fa6-bb92-64f71fdc6aa5
     CategoryPost:
       required:
-      - forwardTo
-      - label
-      - subject
-      - title
+        - forwardTo
+        - label
+        - subject
+        - title
       type: object
       properties:
         title:
@@ -771,14 +771,14 @@ components:
           description: Status of the incident
           example: INSKICKAT
           enum:
-          - INSKICKAT
-          - KLART
-          - KOMPLETTERAD
-          - SPARAT
-          - UNDER_BEHANDLING
-          - VANTAR_KOMPLETTERING
-          - ARKIVERAD
-          - ERROR
+            - INSKICKAT
+            - KLART
+            - KOMPLETTERAD
+            - SPARAT
+            - UNDER_BEHANDLING
+            - VANTAR_KOMPLETTERING
+            - ARKIVERAD
+            - ERROR
         category:
           $ref: '#/components/schemas/Category'
         attachments:
@@ -848,4 +848,4 @@ components:
           type: string
           description: The category label
           example: VATTENMÄTARE
-  securitySchemes: {}
+  securitySchemes: { }
