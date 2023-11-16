@@ -1,10 +1,8 @@
 package apptest;
 
-import static apptest.CommonStubs.stubForAccessToken;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.OK;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -25,11 +23,6 @@ class LifeBuoyIT extends AbstractAppTest {
 	private static final String REQUEST_FILE = "request.json";
 	private static final String EXPECTED_FILE = "expected.json";
 
-	@BeforeEach
-	void setup() {
-		stubForAccessToken();
-	}
-	
 	@Test
 	void test1_successfulLifeBuoyIncident() {
 		setupCall()
