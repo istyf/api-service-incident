@@ -22,14 +22,7 @@ spring:
         provider:
           messaging:
             token-uri: ${config.integration.messaging.token-url}
-          lifebuoy:
-            token-uri: ${config.integration.lifebuoy.token-url}
         registration:
-          lifebuoy:
-            authorization-grant-type: client_credentials
-            provider: lifebuoy
-            client-id: ${config.integration.lifebuoy.client-id}
-            client-secret: ${config.integration.lifebuoy.client-secret}
           messaging:
             authorization-grant-type: client_credentials
             provider: messaging

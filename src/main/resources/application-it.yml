@@ -21,8 +21,5 @@ config:
         reply-to: override
     lifebuoy:
       url: http://localhost:${wiremock.server.port}/lifebuoy
-      token-url: http://localhost:${wiremock.server.port}/token
-      client-id: override
-      client-secret: override
       apikey: override
 
