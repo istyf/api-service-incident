@@ -1,26 +1,29 @@
 package se.sundsvall.incident.integration.messaging;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Component;
-import se.sundsvall.incident.dto.IncidentDto;
+
+import se.sundsvall.incident.integration.db.entity.IncidentEntity;
+
+import generated.se.sundsvall.messaging.MessageResult;
 
 @Component
 public class MessagingIntegration {
 
-    static final String INTEGRATION_NAME = "MessagingClient";
-    private final EmailMapper emailMapper;
-    private final MessagingClient client;
+	private final MessagingMapper messagingMapper;
+	private final MessagingClient client;
 
-    public MessagingIntegration(EmailMapper emailMapper, MessagingClient client) {
-        this.emailMapper = emailMapper;
-        this.client = client;
-    }
+	public MessagingIntegration(final MessagingMapper messagingMapper, final MessagingClient client) {
+		this.messagingMapper = messagingMapper;
+		this.client = client;
+	}
 
-    public void sendEmail(IncidentDto dto) {
+	public Optional<MessageResult> sendEmail(final IncidentEntity incident) {
+		return Optional.of(client.sendEmail(messagingMapper.toEmailDto(incident)));
+	}
 
-        client.sendEmail(emailMapper.toEmailDto(dto));
-    }
-
-    public void sendMSVAEmail(IncidentDto dto) {
-        client.sendEmail(emailMapper.toMSVAEmailDto(dto));
-    }
+	public Optional<MessageResult> sendMSVAEmail(final IncidentEntity incident) {
+		return Optional.of(client.sendEmail(messagingMapper.toMSVAEmailRequest(incident)));
+	}
 }

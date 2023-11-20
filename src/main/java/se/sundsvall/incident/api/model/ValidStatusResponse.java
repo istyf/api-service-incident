@@ -1,15 +1,20 @@
 package se.sundsvall.incident.api.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder(setterPrefix = "with", builderClassName = "Builder")
-@JsonDeserialize(builder = ValidStatusResponse.Builder.class)
-@AllArgsConstructor
+@Builder(setterPrefix = "with")
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 public class ValidStatusResponse {
-    private Integer STATUS_ID;
-    private String status;
+
+	@Schema(description = "The ID of the status", example = "5")
+	private Integer statusId;
+
+	@Schema(description = "The status name", example = "INSKICKAT")
+	private String status;
+
 }

@@ -1,54 +1,52 @@
 package se.sundsvall.incident.integration.messaging;
 
-import generated.se.sundsvall.messaging.EmailRequest;
-import org.junit.jupiter.api.BeforeEach;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.incident.TestDataFactory.createEmailRequest;
+import static se.sundsvall.incident.TestDataFactory.createIncidentEntity;
+import static se.sundsvall.incident.TestDataFactory.createMSVAEmailRequest;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static se.sundsvall.incident.TestDataFactory.buildEmailRequest;
-import static se.sundsvall.incident.TestDataFactory.buildIncidentDto;
-import static se.sundsvall.incident.TestDataFactory.buildMSVAEmailRequest;
+import generated.se.sundsvall.messaging.EmailRequest;
+import generated.se.sundsvall.messaging.MessageResult;
 
 @ExtendWith(MockitoExtension.class)
 class MessagingIntegrationTest {
 
-    MessagingIntegration messagingIntegration;
+	@Mock
+	private MessagingMapper mockMessagingMapper;
 
-    @Mock
-    EmailMapper emailMapper;
+	@Mock
+	private MessagingClient mockMessagingClient;
 
-    @Mock
-    MessagingClient messagingClient;
+	@InjectMocks
+	private MessagingIntegration messagingIntegration;
 
-    @BeforeEach
-    void setUp() {
+	@Test
+	void sendEmail() {
+		var incident = createIncidentEntity();
+		when(mockMessagingMapper.toEmailDto(any())).thenReturn(createEmailRequest());
+		when(mockMessagingClient.sendEmail(any())).thenReturn(new MessageResult());
+		messagingIntegration.sendEmail(incident);
 
-        messagingIntegration = new MessagingIntegration(emailMapper, messagingClient);
-    }
+		verify(mockMessagingClient).sendEmail(any(EmailRequest.class));
+		verify(mockMessagingMapper).toEmailDto(any());
+	}
 
-    @Test
-    void sendEmail() {
-        var incidentDto = buildIncidentDto();
-        when(emailMapper.toEmailDto(any())).thenReturn(buildEmailRequest());
-        messagingIntegration.sendEmail(incidentDto);
+	@Test
+	void sendMSVAEmail() {
+		var incident = createIncidentEntity();
+		when(mockMessagingMapper.toMSVAEmailRequest(any())).thenReturn(createMSVAEmailRequest());
+		when(mockMessagingClient.sendEmail(any())).thenReturn(new MessageResult());
+		messagingIntegration.sendMSVAEmail(incident);
 
-        verify(messagingClient, times(1)).sendEmail(any(EmailRequest.class));
-        verify(emailMapper, times(1)).toEmailDto(any());
-    }
-
-    @Test
-    void sendMSVAEmail() {
-        var incidentDto = buildIncidentDto();
-        when(emailMapper.toMSVAEmailDto(any())).thenReturn(buildMSVAEmailRequest());
-        messagingIntegration.sendMSVAEmail(incidentDto);
-
-        verify(messagingClient, times(1)).sendEmail(any(EmailRequest.class));
-        verify(emailMapper, times(1)).toMSVAEmailDto(any());
-    }
+		verify(mockMessagingClient).sendEmail(any(EmailRequest.class));
+		verify(mockMessagingMapper).toMSVAEmailRequest(any());
+	}
 }

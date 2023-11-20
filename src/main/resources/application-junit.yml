@@ -1,0 +1,46 @@
+config:
+  datasource:
+    url: jdbc:tc:mariadb:10.6.14:///
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    username: override
+    password: override
+  jpa:
+    ddl-auto: validate
+    defer-datasource-initialization: false
+  flyway:
+    enabled: true
+  integration:
+    messaging:
+      url: http://nowhere.com
+      sender:
+        address: override
+        name: override
+        reply-to: override
+      client-id: override
+      client-secret: override
+    lifebuoy:
+      apikey: override
+      url: http://nowhere.com
+
+#########################
+###-Schema Generation-###
+#########################
+spring:
+  jpa:
+    properties:
+      jakarta:
+        persistence:
+          schema-generation:
+            database:
+              action: update
+            scripts:
+              action: create
+              create-target: target/database/generated-schema.sql
+            create-source: metadata
+      hibernate:
+        hbm2ddl:
+          schema-generation:
+            script:
+              append: false
+        format_sql: true
+

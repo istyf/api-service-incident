@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: api-incident
+  datasource:
+    url: ${config.datasource.url}
+    username: ${config.datasource.username}
+    password: ${config.datasource.password}
+    driver-class-name: ${config.datasource.driver-class-name}
+  jpa:
+    hibernate:
+      ddl-auto: ${config.jpa.ddl-auto}
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
+    defer-datasource-initialization: ${config.jpa.defer-datasource-initialization}
+  flyway:
+    enabled: ${config.flyway.enabled}
+    baseline-on-migrate: true
+  security:
+    oauth2:
+      client:
+        provider:
+          messaging:
+            token-uri: ${config.integration.messaging.token-url}
+        registration:
+          messaging:
+            authorization-grant-type: client_credentials
+            provider: messaging
+            client-id: ${config.integration.messaging.client-id}
+            client-secret: ${config.integration.messaging.client-secret}
+openapi:
+  title: ${spring.application.name}
+  name: ${spring.application.name}
+  version: '@project.version@'
+integration:
+  messaging:
+    url: ${config.integration.messaging.url}
+    sender:
+      address: ${config.integration.messaging.sender.address}
+      name: ${config.integration.messaging.sender.name}
+      reply-to: ${config.integration.messaging.sender.reply-to}
+    connect-timeout: 5
+    read-timeout: 60
+  lifebuoy:
+    url: ${config.integration.lifebuoy.url}
+    api-key: ${config.integration.lifebuoy.apikey}
+    read-timeout: 60
+    connect-timeout: 5

@@ -1,97 +1,131 @@
 package se.sundsvall.incident.service.mapper;
 
-import org.springframework.stereotype.Component;
-import se.sundsvall.incident.api.model.AttachmentRequest;
-import se.sundsvall.incident.api.model.IncidentSaveRequest;
-import se.sundsvall.incident.dto.AttachmentDto;
-import se.sundsvall.incident.dto.Category;
-import se.sundsvall.incident.dto.IncidentDto;
-import se.sundsvall.incident.dto.Status;
-import se.sundsvall.incident.integration.db.entity.AttachmentEntity;
-import se.sundsvall.incident.integration.db.entity.IncidentEntity;
-
 import java.util.List;
 import java.util.UUID;
 
-@Component
-public class Mapper {
+import se.sundsvall.incident.api.model.Attachment;
+import se.sundsvall.incident.api.model.AttachmentRequest;
+import se.sundsvall.incident.api.model.Category;
+import se.sundsvall.incident.api.model.CategoryPost;
+import se.sundsvall.incident.api.model.IncidentOepResponse;
+import se.sundsvall.incident.api.model.IncidentResponse;
+import se.sundsvall.incident.api.model.IncidentSaveRequest;
+import se.sundsvall.incident.integration.db.entity.AttachmentEntity;
+import se.sundsvall.incident.integration.db.entity.CategoryEntity;
+import se.sundsvall.incident.integration.db.entity.IncidentEntity;
+import se.sundsvall.incident.integration.db.entity.enums.Status;
 
-    public IncidentEntity toEntity(IncidentSaveRequest request) {
-        var uuid = UUID.randomUUID().toString();
-        return IncidentEntity.builder()
-                .withIncidentId(uuid)
-                .withExternalCaseId(request.getExternalCaseId())
-                .withPersonID(request.getPersonId())
-                .withPhoneNumber(request.getPhoneNumber())
-                .withEmail(request.getEmail())
-                .withContactMethod(request.getContactMethod())
-                .withCategory(Category.forValue(request.getCategory()))
-                .withDescription(request.getDescription())
-                .withMapCoordinates(request.getMapCoordinates())
-                .withStatus(Status.INSKICKAT)
-                .build();
-    }
+public final class Mapper {
 
-    public AttachmentEntity toEntity(AttachmentRequest request, String incidentId) {
-        return AttachmentEntity.builder()
-                .withMimeType(request.getMimeType())
-                .withNote(request.getNote())
-                .withExtension(request.getExtension())
-                .withFile(request.getFile())
-                .withCategory(request.getCategory())
-                .withIncidentId(incidentId)
-                .withName(UUID.randomUUID().toString())
-                .build();
-    }
+	private Mapper() {
+		// Never instantiate
+	}
 
-    public IncidentDto toIncidentDto(IncidentEntity incidentEntity) {
-        return IncidentDto.builder()
-                .withIncidentId(incidentEntity.getIncidentId())
-                .withExternalCaseId(incidentEntity.getExternalCaseId())
-                .withPersonId(incidentEntity.getPersonID())
-                .withCreated(incidentEntity.getCreated())
-                .withUpdated(incidentEntity.getUpdated())
-                .withPhoneNumber(incidentEntity.getPhoneNumber())
-                .withEmail(incidentEntity.getEmail())
-                .withContactMethod(incidentEntity.getContactMethod())
-                .withCategory(incidentEntity.getCategory().getValue())
-                .withDescription(incidentEntity.getDescription())
-                .withMapCoordinates(incidentEntity.getMapCoordinates())
-                .withFeedback(incidentEntity.getFeedback())
-                .withStatusText(incidentEntity.getStatus().getLabel())
-                .withStatusId(incidentEntity.getStatus().getValue())
-                .build();
-    }
+	public static IncidentEntity toIncidentEntity(final IncidentSaveRequest request,
+		final CategoryEntity category, final List<AttachmentEntity> attachments) {
+		if (request == null) {
+			return null;
+		}
+		return IncidentEntity.builder()
+			.withPersonId(request.getPersonId())
+			.withExternalCaseId(request.getExternalCaseId())
+			.withDescription(request.getDescription())
+			.withStatus(Status.INSKICKAT)
+			.withEmail(request.getEmail())
+			.withCoordinates(request.getMapCoordinates())
+			.withContactMethod(request.getContactMethod())
+			.withPhoneNumber(request.getPhoneNumber())
+			.withCategory(category)
+			.withAttachments(attachments)
+			.build();
+	}
 
-    public IncidentDto toIncidentDto(IncidentEntity incidentEntity, List<AttachmentEntity> attachmentList) {
-        return IncidentDto.builder()
-                .withIncidentId(incidentEntity.getIncidentId())
-                .withExternalCaseId(incidentEntity.getExternalCaseId())
-                .withPersonId(incidentEntity.getPersonID())
-                .withCreated(incidentEntity.getCreated())
-                .withUpdated(incidentEntity.getUpdated())
-                .withPhoneNumber(incidentEntity.getPhoneNumber())
-                .withEmail(incidentEntity.getEmail())
-                .withContactMethod(incidentEntity.getContactMethod())
-                .withCategory(incidentEntity.getCategory().getValue())
-                .withDescription(incidentEntity.getDescription())
-                .withMapCoordinates(incidentEntity.getMapCoordinates())
-                .withFeedback(incidentEntity.getFeedback())
-                .withAttachments(attachmentList.stream()
-                        .map(this::toAttachmentDto)
-                        .toList())
-                .build();
-    }
+	public static IncidentResponse toIncidentResponse(final IncidentEntity entity) {
+		if (entity == null) {
+			return null;
+		}
+		return IncidentResponse.builder()
+			.withIncidentId(entity.getIncidentId())
+			.withPersonId(entity.getPersonId())
+			.withExternalCaseId(entity.getExternalCaseId())
+			.withDescription(entity.getDescription())
+			.withPhoneNumber(entity.getPhoneNumber())
+			.withContactMethod(entity.getContactMethod())
+			.withEmail(entity.getEmail())
+			.withDescription(entity.getDescription())
+			.withUpdated(entity.getUpdated())
+			.withCreated(entity.getCreated())
+			.withStatus(entity.getStatus())
+			.withCategory(toCategory(entity.getCategory()))
+			.withAttachments(entity.getAttachments().stream()
+				.map(Mapper::toAttachment)
+				.toList())
+			.build();
+	}
 
-    public AttachmentDto toAttachmentDto(AttachmentEntity attachmentEntity) {
-        return AttachmentDto.builder()
-                .withName(attachmentEntity.getName())
-                .withMimeType(attachmentEntity.getMimeType())
-                .withNote(attachmentEntity.getNote())
-                .withExtension(attachmentEntity.getExtension())
-                .withFile(attachmentEntity.getFile())
-                .withCategory(attachmentEntity.getCategory())
-                .withIncidentId(attachmentEntity.getIncidentId())
-                .build();
-    }
+	public static IncidentOepResponse toIncidentOepResponse(final IncidentEntity entity) {
+		if (entity == null) {
+			return null;
+		}
+		return IncidentOepResponse.builder()
+			.withIncidentId(entity.getIncidentId())
+			.withStatusId(entity.getStatus().getValue())
+			.withStatusText(entity.getStatus().getLabel())
+			.withExternalCaseId(entity.getExternalCaseId())
+			.build();
+	}
+
+	public static Category toCategory(final CategoryEntity entity) {
+		if (entity == null) {
+			return null;
+		}
+		return Category.builder()
+			.withCategoryId(entity.getCategoryId())
+			.withTitle(entity.getTitle())
+			.withLabel(entity.getLabel())
+			.withForwardTo(entity.getForwardTo())
+			.withSubject(entity.getSubject())
+			.build();
+	}
+
+	public static CategoryEntity toCategoryEntity(final CategoryPost categoryPost) {
+		if (categoryPost == null) {
+			return null;
+		}
+		return CategoryEntity.builder()
+			.withLabel(categoryPost.label())
+			.withTitle(categoryPost.title())
+			.withForwardTo(categoryPost.forwardTo())
+			.withSubject(categoryPost.subject())
+			.build();
+	}
+
+	public static Attachment toAttachment(final AttachmentEntity entity) {
+		if (entity == null) {
+			return null;
+		}
+		return Attachment.builder()
+			.withName(entity.getName())
+			.withMimeType(entity.getMimeType())
+			.withNote(entity.getNote())
+			.withExtension(entity.getExtension())
+			.withFile(entity.getFile())
+			.withCategory(entity.getCategory())
+			.build();
+	}
+
+	public static AttachmentEntity toAttachmentEntity(final AttachmentRequest request) {
+		if (request == null) {
+			return null;
+		}
+		return AttachmentEntity.builder()
+			.withMimeType(request.getMimeType())
+			.withNote(request.getNote())
+			.withExtension(request.getExtension())
+			.withFile(request.getFile())
+			.withCategory(request.getCategory())
+			.withName(UUID.randomUUID().toString())
+			.build();
+	}
+
 }
