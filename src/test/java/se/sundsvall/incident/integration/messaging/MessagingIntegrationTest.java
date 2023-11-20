@@ -3,15 +3,15 @@ package se.sundsvall.incident.integration.messaging;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static se.sundsvall.incident.TestDataFactory.createEmailRequest;
 import static se.sundsvall.incident.TestDataFactory.createIncidentEntity;
-import static se.sundsvall.incident.TestDataFactory.createMSVAEmailRequest;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import se.sundsvall.incident.integration.messaging.configuration.MessagingProperties;
 
 import generated.se.sundsvall.messaging.EmailRequest;
 import generated.se.sundsvall.messaging.MessageResult;
@@ -20,7 +20,7 @@ import generated.se.sundsvall.messaging.MessageResult;
 class MessagingIntegrationTest {
 
 	@Mock
-	private MessagingMapper mockMessagingMapper;
+	private MessagingProperties mockMessagingProperties;
 
 	@Mock
 	private MessagingClient mockMessagingClient;
@@ -30,23 +30,33 @@ class MessagingIntegrationTest {
 
 	@Test
 	void sendEmail() {
+		var address = "someemail@host.se";
+		var name = "someEmailName";
+		var replyTo = "elsewhere@email.com";
+		final var sender = new MessagingProperties.Sender(address, name, replyTo);
+		when(mockMessagingProperties.sender()).thenReturn(sender);
+
 		var incident = createIncidentEntity();
-		when(mockMessagingMapper.toEmailDto(any())).thenReturn(createEmailRequest());
+
 		when(mockMessagingClient.sendEmail(any())).thenReturn(new MessageResult());
 		messagingIntegration.sendEmail(incident);
 
 		verify(mockMessagingClient).sendEmail(any(EmailRequest.class));
-		verify(mockMessagingMapper).toEmailDto(any());
+
 	}
 
 	@Test
 	void sendMSVAEmail() {
+		var address = "someemail@host.se";
+		var name = "someEmailName";
+		var replyTo = "elsewhere@email.com";
+		final var sender = new MessagingProperties.Sender(address, name, replyTo);
+		when(mockMessagingProperties.sender()).thenReturn(sender);
 		var incident = createIncidentEntity();
-		when(mockMessagingMapper.toMSVAEmailRequest(any())).thenReturn(createMSVAEmailRequest());
+
 		when(mockMessagingClient.sendEmail(any())).thenReturn(new MessageResult());
 		messagingIntegration.sendMSVAEmail(incident);
 
 		verify(mockMessagingClient).sendEmail(any(EmailRequest.class));
-		verify(mockMessagingMapper).toMSVAEmailRequest(any());
 	}
 }

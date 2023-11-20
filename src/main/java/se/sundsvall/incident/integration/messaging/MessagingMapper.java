@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
@@ -22,37 +21,38 @@ import generated.se.sundsvall.messaging.EmailAttachment;
 import generated.se.sundsvall.messaging.EmailRequest;
 import generated.se.sundsvall.messaging.EmailSender;
 
-@Component
 @EnableConfigurationProperties(MessagingProperties.class)
-class MessagingMapper {
+public final class MessagingMapper {
 
-	private final MessagingProperties properties;
-	private final SpringTemplateEngine thymeleafTemplateEngine;
 
-	MessagingMapper(final MessagingProperties properties,
-		final SpringTemplateEngine thymeleafTemplateEngine) {
-		this.properties = properties;
-		this.thymeleafTemplateEngine = thymeleafTemplateEngine;
+	private static final SpringTemplateEngine thymeleafTemplateEngine = new SpringTemplateEngine();
+
+	private MessagingMapper() {
+
 	}
 
-	EmailRequest toMSVAEmailRequest(final IncidentEntity incident) {
+	public static EmailRequest toMSVAEmailRequest(final IncidentEntity incident, final MessagingProperties properties) {
 		final String[] splitDescription = incident.getDescription().split("-");
 		final var htmlmessage = "<p>" + incident.getCategory().getLabel() + " " + splitDescription[0] + " genererat larm" + splitDescription[1] + " klockan " + now().format(ISO_LOCAL_DATE_TIME) + "</p>";
 		return new EmailRequest(incident.getCategory().getForwardTo(), incident.getCategory().getSubject() + " " + incident.getDescription())
-			.sender(new EmailSender().address(properties.sender().address()).name(properties.sender().name()).replyTo(properties.sender().replyTo()))
-			.htmlMessage(getEncoder().encodeToString(htmlmessage.getBytes(UTF_8)));
+			.htmlMessage(getEncoder().encodeToString(htmlmessage.getBytes(UTF_8)))
+			.sender(new EmailSender()
+				.address(properties.sender().address())
+				.name(properties.sender().name())
+				.replyTo(properties.sender().replyTo()));
+
 	}
 
-	EmailRequest toEmailDto(final IncidentEntity incident) {
+	public static EmailRequest toEmailDto(final IncidentEntity incident, final MessagingProperties properties) {
 		return new EmailRequest(incident.getCategory().getForwardTo(), "Det har inkommit en felanmälan.")
 			.sender(new EmailSender(properties.sender().name(), properties.sender().address()))
-			.htmlMessage(generateHtmlMessage(incident))
+			.htmlMessage(generateHtmlMessage(incident, properties))
 			.attachments(incident.getAttachments().stream()
-				.map(this::toAttachmentEmailDto)
+				.map(MessagingMapper::toAttachmentEmailDto)
 				.toList());
 	}
 
-	private String generateHtmlMessage(IncidentEntity incident) {
+	private static String generateHtmlMessage(IncidentEntity incident, final MessagingProperties properties) {
 		final Map<String, Object> templateModel = new HashMap<>();
 
 		templateModel.put("incidentId", incident.getIncidentId());
@@ -71,7 +71,7 @@ class MessagingMapper {
 		return null;
 	}
 
-	EmailAttachment toAttachmentEmailDto(AttachmentEntity attachment) {
+	static EmailAttachment toAttachmentEmailDto(AttachmentEntity attachment) {
 		return new EmailAttachment(attachment.getName(), attachment.getFile())
 			.contentType(attachment.getMimeType());
 	}

@@ -46,7 +46,7 @@ class MessagingMapperTest {
 			categoryEntity -> categoryEntity.setLabel(categoryLabel)));
 
 		when(mockProperties.sender()).thenReturn(sender);
-		final var response = mockMessagingMapper.toMSVAEmailRequest(incident);
+		final var response = mockMessagingMapper.toMSVAEmailRequest(incident, mockProperties);
 
 		var decodedMessage = Base64.getDecoder().decode(response.getHtmlMessage());
 		var email = new String(decodedMessage, StandardCharsets.UTF_8);
@@ -69,7 +69,7 @@ class MessagingMapperTest {
 		final var incident = createIncidentEntity();
 
 		when(mockProperties.sender()).thenReturn(sender);
-		final var response = mockMessagingMapper.toEmailDto(incident);
+		final var response = mockMessagingMapper.toEmailDto(incident, mockProperties);
 
 		assertThat(response).isNotNull();
 		assertThat(response.getEmailAddress()).isEqualTo(incident.getCategory().getForwardTo());
