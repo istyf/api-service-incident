@@ -1,6 +1,6 @@
 spring:
   application:
-    name: incident-api
+    name: api-incident
   datasource:
     url: ${config.datasource.url}
     username: ${config.datasource.username}
