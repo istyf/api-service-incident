@@ -42,7 +42,6 @@ class MessagingIntegrationTest {
 		messagingIntegration.sendEmail(incident);
 
 		verify(mockMessagingClient).sendEmail(any(EmailRequest.class));
-
 	}
 
 	@Test
