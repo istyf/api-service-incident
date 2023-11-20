@@ -5,7 +5,7 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "3.0"
+  version: '@project.version@'
 servers:
 - url: http://localhost:8080
   description: Generated server url
@@ -43,14 +43,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/IncidentResponse'
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
@@ -76,14 +76,14 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/IncidentSaveResponse'
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
@@ -108,14 +108,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Category'
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
@@ -134,14 +134,14 @@ paths:
       responses:
         "201":
           description: Category created
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
@@ -173,14 +173,14 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
@@ -211,14 +211,14 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
@@ -252,14 +252,14 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
@@ -285,14 +285,14 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
@@ -331,14 +331,14 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
@@ -371,14 +371,14 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
@@ -390,14 +390,14 @@ paths:
       summary: Get a list of valid statuses
       operationId: getValidIncidentStatuses
       responses:
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
@@ -440,14 +440,14 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
@@ -459,14 +459,14 @@ paths:
       summary: Get a list of valid categories
       operationId: getValidCategories
       responses:
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
@@ -491,14 +491,14 @@ paths:
       summary: Get a list of valid categories in oep format
       operationId: getValidOepCategories
       responses:
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal Server Error
           content:
             application/problem+json:
               schema:
@@ -623,9 +623,9 @@ components:
             type: object
         status:
           $ref: '#/components/schemas/StatusType'
-        detail:
-          type: string
         title:
+          type: string
+        detail:
           type: string
     StatusType:
       type: object
