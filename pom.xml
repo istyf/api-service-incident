@@ -18,7 +18,7 @@
 		<published.container.port.production>9076</published.container.port.production>
 		<failsafe.version>3.3.2</failsafe.version>
 		<openapi-generator-maven-plugin>7.1.0</openapi-generator-maven-plugin>
-		<testcontainers.version>1.19.2</testcontainers.version>
+		<testcontainers.version>1.19.3</testcontainers.version>
 		<generated-sources-path>
 			${project.build.directory}/generated-sources
 		</generated-sources-path>
