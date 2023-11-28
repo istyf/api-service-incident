@@ -18,10 +18,7 @@
 		<published.container.port.production>9076</published.container.port.production>
 		<failsafe.version>3.3.2</failsafe.version>
 		<openapi-generator-maven-plugin>7.1.0</openapi-generator-maven-plugin>
-		<testcontainers.version>1.19.2</testcontainers.version>
-		<generated-sources-path>
-			${project.build.directory}/generated-sources
-		</generated-sources-path>
+		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
 		<generated-sources-java-path>src/main/java</generated-sources-java-path>
 	</properties>
 	<dependencies>
@@ -30,7 +27,6 @@
 			<groupId>se.sundsvall.dept44</groupId>
 			<artifactId>dept44-common-validators</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>se.sundsvall.dept44</groupId>
 			<artifactId>dept44-starter-feign</artifactId>
@@ -42,12 +38,6 @@
 			<artifactId>mariadb-java-client</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-
-		<dependency>
-			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-core</artifactId>
-		</dependency>
-
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-mysql</artifactId>
@@ -59,18 +49,15 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
-
 		<dependency>
 			<groupId>dev.failsafe</groupId>
 			<artifactId>failsafe</artifactId>
 			<version>${failsafe.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
@@ -82,28 +69,17 @@
 			<artifactId>dept44-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>test</scope>
 		</dependency>
-
-		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>testcontainers</artifactId>
-			<version>${testcontainers.version}</version>
-			<scope>test</scope>
-		</dependency>
-
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>mariadb</artifactId>
-			<version>${testcontainers.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<resources>
 			<resource>
@@ -114,7 +90,6 @@
 				<filtering>true</filtering>
 			</resource>
 		</resources>
-
 		<plugins>
 			<plugin>
 				<groupId>org.openapitools</groupId>
@@ -150,7 +125,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
