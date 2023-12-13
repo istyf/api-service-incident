@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>se.sundsvall.dept44</groupId>
 		<artifactId>dept44-service-parent</artifactId>
-		<version>3.4</version>
+		<version>4.0</version>
 	</parent>
 	<groupId>se.sundsvall</groupId>
 	<artifactId>api-service-incident</artifactId>
@@ -19,7 +19,6 @@
 		<failsafe.version>3.3.2</failsafe.version>
 		<openapi-generator-maven-plugin>7.1.0</openapi-generator-maven-plugin>
 		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
-		<generated-sources-java-path>src/main/java</generated-sources-java-path>
 	</properties>
 	<dependencies>
 		<!-- Framework -->
@@ -37,6 +36,10 @@
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
 			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.flywaydb</groupId>
@@ -111,7 +114,7 @@
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<configOptions>
 								<useSpringBoot3>true</useSpringBoot3>
-								<sourceFolder>${generated-sources-java-path}</sourceFolder>
+								<sourceFolder>models</sourceFolder>
 								<dateLibrary>java8</dateLibrary>
 								<apiPackage>generated</apiPackage>
 								<modelPackage>generated.se.sundsvall.messaging</modelPackage>
@@ -137,9 +140,7 @@
 						</goals>
 						<configuration>
 							<sources>
-								<source>
-									${generated-sources-path}/${generated-sources-java-path}
-								</source>
+								<source>${generated-sources-path}/models</source>
 							</sources>
 						</configuration>
 					</execution>
