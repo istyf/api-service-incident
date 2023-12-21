@@ -17,7 +17,6 @@
 		<published.container.port.test>9076</published.container.port.test>
 		<published.container.port.production>9076</published.container.port.production>
 		<failsafe.version>3.3.2</failsafe.version>
-		<openapi-generator-maven-plugin>7.1.0</openapi-generator-maven-plugin>
 		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
 	</properties>
 	<dependencies>
@@ -30,7 +29,6 @@
 			<groupId>se.sundsvall.dept44</groupId>
 			<artifactId>dept44-starter-feign</artifactId>
 		</dependency>
-
 		<!-- Database -->
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
@@ -39,13 +37,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-mysql</artifactId>
 		</dependency>
-
 		<!-- Other -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -65,7 +58,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
-
 		<!-- Test -->
 		<dependency>
 			<groupId>se.sundsvall.dept44</groupId>
@@ -97,7 +89,6 @@
 			<plugin>
 				<groupId>org.openapitools</groupId>
 				<artifactId>openapi-generator-maven-plugin</artifactId>
-				<version>${openapi-generator-maven-plugin}</version>
 				<executions>
 					<execution>
 						<id>api-service-messaging</id>
@@ -105,9 +96,7 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>
-								${project.basedir}/src/generated/api-service-messaging.yaml
-							</inputSpec>
+							<inputSpec>${project.basedir}/src/generated/api-service-messaging.yaml</inputSpec>
 							<output>${generated-sources-path}</output>
 							<generatorName>spring</generatorName>
 							<generateApis>false</generateApis>
