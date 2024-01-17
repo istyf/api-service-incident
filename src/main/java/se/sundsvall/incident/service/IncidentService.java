@@ -1,5 +1,5 @@
 package se.sundsvall.incident.service;
-
+import static org.zalando.problem.Status.BAD_REQUEST;
 import static org.zalando.problem.Status.NOT_FOUND;
 import static se.sundsvall.incident.service.mapper.Mapper.toIncidentEntity;
 import static se.sundsvall.incident.service.mapper.Mapper.toIncidentOepResponse;
@@ -81,7 +81,7 @@ public class IncidentService {
 	@Transactional
 	public IncidentSaveResponse createIncident(final IncidentSaveRequest request) {
 		var category = categoryRepository.findById(request.getCategory())
-			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ENTITY_NOT_FOUND.formatted(CATEGORY, request.getCategory())));
+			.orElseThrow(() -> Problem.valueOf(BAD_REQUEST, ENTITY_NOT_FOUND.formatted(CATEGORY, request.getCategory())));
 		var attachments = Optional.ofNullable(request.getAttachments())
 			.map(list -> list.stream()
 				.map(Mapper::toAttachmentEntity)
