@@ -138,7 +138,8 @@ class IncidentServiceTest {
 
 		assertThatThrownBy(() -> incidentService.createIncident(request))
 			.isInstanceOf(Problem.class)
-			.hasMessageContaining("Not Found: Category with id: ");
+			.hasMessageContaining("Bad Request: Category with id: ")
+			.extracting("status").isEqualTo(BAD_REQUEST);
 
 		verify(mockCategoryRepository).findById(request.getCategory());
 		verify(mockIncidentRepository, never()).save(any());
