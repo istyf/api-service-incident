@@ -10,6 +10,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.zalando.problem.Status.BAD_REQUEST;
 import static se.sundsvall.incident.TestDataFactory.createCategoryEntity;
 import static se.sundsvall.incident.TestDataFactory.createIncidentEntity;
 import static se.sundsvall.incident.TestDataFactory.createIncidentSaveRequest;
